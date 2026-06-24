@@ -1,0 +1,235 @@
+/* ============================================================
+   styles.css — TicketApp Design System
+   Google Font: Inter (importado desde CDN)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── TOKENS DE DISEÑO ── */
+:root {
+  --ta-bg-start:        #0d1117;
+  --ta-bg-end:          #161b2e;
+  --ta-primary:         #4f8ef7;
+  --ta-primary-dark:    #2f6bdb;
+  --ta-primary-glow:    rgba(79, 142, 247, 0.30);
+  --ta-card-bg:         rgba(22, 27, 46, 0.85);
+  --ta-card-border:     rgba(79, 142, 247, 0.18);
+  --ta-input-bg:        rgba(255, 255, 255, 0.06);
+  --ta-input-border:    rgba(255, 255, 255, 0.15);
+  --ta-input-focus:     rgba(79, 142, 247, 0.55);
+  --ta-text:            #e6edf3;
+  --ta-text-muted:      #8b949e;
+  --ta-demo-bg:         rgba(79, 142, 247, 0.07);
+  --ta-demo-border:     rgba(79, 142, 247, 0.20);
+  --ta-radius:          1rem;
+  --ta-transition:      0.25s ease;
+}
+
+/* ── RESET BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── FONDO LOGIN ── */
+.ta-login-body {
+  background: linear-gradient(135deg, var(--ta-bg-start) 0%, var(--ta-bg-end) 100%);
+  background-attachment: fixed;
+  color: var(--ta-text);
+  min-height: 100dvh;
+  /* Partículas estéticas con pseudo-elemento */
+  position: relative;
+  overflow: hidden;
+}
+
+.ta-login-body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(79,142,247,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 35% at 80% 80%, rgba(120,80,220,0.10) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── TARJETA LOGIN ── */
+.ta-login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 430px;
+  background: var(--ta-card-bg) !important;
+  border: 1px solid var(--ta-card-border) !important;
+  border-radius: var(--ta-radius) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.04),
+    0 20px 60px rgba(0,0,0,0.5),
+    0 0 40px var(--ta-primary-glow) !important;
+  animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+/* ── LOGO / ICONO ── */
+.ta-logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ta-primary) 0%, #7c4dff 100%);
+  box-shadow: 0 0 24px var(--ta-primary-glow);
+  font-size: 2rem;
+  color: #fff;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 24px var(--ta-primary-glow); }
+  50%       { box-shadow: 0 0 42px rgba(79,142,247,0.55); }
+}
+
+.ta-brand {
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(90deg, var(--ta-primary) 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── LABELS ── */
+.form-label {
+  color: var(--ta-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* ── INPUTS ── */
+.ta-input,
+.ta-input.form-control {
+  background: var(--ta-input-bg) !important;
+  border: 1px solid var(--ta-input-border) !important;
+  border-radius: 0.6rem !important;
+  color: var(--ta-text) !important;
+  padding: 0.65rem 1rem;
+  transition: border-color var(--ta-transition), box-shadow var(--ta-transition);
+}
+
+.ta-input::placeholder { color: var(--ta-text-muted) !important; }
+
+.ta-input:focus,
+.ta-input.form-control:focus {
+  background: rgba(255,255,255,0.09) !important;
+  border-color: var(--ta-primary) !important;
+  box-shadow: 0 0 0 3px var(--ta-input-focus) !important;
+  outline: none;
+}
+
+/* Input inválido */
+.was-validated .ta-input:invalid {
+  border-color: #f85149 !important;
+  box-shadow: 0 0 0 3px rgba(248,81,73,0.25) !important;
+}
+
+/* ── BOTÓN TOGGLE CONTRASEÑA ── */
+.input-group .btn-outline-secondary {
+  background: var(--ta-input-bg) !important;
+  border: 1px solid var(--ta-input-border) !important;
+  border-left: none !important;
+  color: var(--ta-text-muted) !important;
+  border-radius: 0 0.6rem 0.6rem 0 !important;
+  transition: color var(--ta-transition), background var(--ta-transition);
+}
+.input-group .btn-outline-secondary:hover {
+  background: rgba(255,255,255,0.1) !important;
+  color: var(--ta-text) !important;
+}
+
+/* Ajuste radio de input dentro de input-group */
+.input-group .ta-input {
+  border-radius: 0.6rem 0 0 0.6rem !important;
+}
+
+/* ── BOTÓN PRINCIPAL ── */
+.ta-btn-primary {
+  background: linear-gradient(135deg, var(--ta-primary) 0%, #6c63ff 100%);
+  border: none;
+  border-radius: 0.6rem;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.75rem;
+  transition:
+    opacity var(--ta-transition),
+    box-shadow var(--ta-transition),
+    transform var(--ta-transition);
+  box-shadow: 0 4px 20px var(--ta-primary-glow);
+}
+
+.ta-btn-primary:hover:not(:disabled) {
+  opacity: 0.90;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(79,142,247,0.45);
+  color: #fff;
+}
+
+.ta-btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.ta-btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── ALERTA DE ERROR ── */
+.alert-danger {
+  background: rgba(248,81,73,0.15) !important;
+  border: 1px solid rgba(248,81,73,0.35) !important;
+  border-radius: 0.6rem !important;
+  color: #ff9492 !important;
+  font-size: 0.875rem;
+}
+
+/* ── HINT DE DEMO ── */
+.ta-demo-hint {
+  background: var(--ta-demo-bg);
+  border: 1px dashed var(--ta-demo-border);
+}
+
+.ta-demo-hint code {
+  color: #79c0ff;
+  font-size: 0.8rem;
+}
+
+.ta-badge-admin {
+  background: linear-gradient(90deg,#f85149,#d73a2b) !important;
+  font-size: 0.7rem;
+  padding: 0.3em 0.6em;
+}
+
+.ta-badge-user {
+  background: linear-gradient(90deg,#3fb950,#2ea043) !important;
+  font-size: 0.7rem;
+  padding: 0.3em 0.6em;
+}
+
+/* ── TEXTO MUTED ── */
+.text-muted { color: var(--ta-text-muted) !important; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 480px) {
+  .ta-login-card { margin: 1rem; padding: 1.5rem !important; }
+  .ta-brand { font-size: 1.5rem; }
+}
