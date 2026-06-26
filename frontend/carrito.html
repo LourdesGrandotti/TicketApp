@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TicketApp | Mi Carrito</title>
+
+</head>
+
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-dark mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="partidos.html">← Volver al Estadio</a>
+            <span class="navbar-text text-white-50">TicketApp | Proceso de Compra</span>
+        </div>
+    </nav>
+
+    <main id="modulo-checkout" class="container my-4" style="max-width: 800px;"></main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="module">
+        import { inicializarAsientos } from "./assets/js/modules/seating.js";
+        import { renderizarCarrito, renderizarFormularioPago, renderizarCompraExitosa } from "./assets/js/modules/cart.js";
+
+        const contenedor = document.getElementById("modulo-checkout");
+        let ordenGenerada = null;
+
+        function navegarFlujoCheckout(vista) {
+            if (vista === "carrito") {
+                renderizarCarrito(contenedor, () => navegarFlujoCheckout("pago"));
+            } else if (vista === "pago") {
+                renderizarFormularioPago(contenedor, (datosCompra) => {
+                    // Simulamos el retardo de red del servidor remoto (1.5 segundos)
+                    setTimeout(() => {
+                        // Genera código siguiendo la nomenclatura C-XXXXX que definió el grupo 
+                        ordenGenerada = "C-" + Math.floor(Math.random() * 90000 + 10000);
+                        navegarFlujoCheckout("exito");
+                    }, 1500);
+                });
+            } else if (vista === "exito") {
+                renderizarCompraExitosa(contenedor, ordenGenerada);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Inicializa el array en memoria recuperando lo que Persona 4 guardó en localStorage
+            inicializarAsientos();
+            // Lanza tu pantalla inicial
+            navegarFlujoCheckout("carrito");
+        });
+    </script>
+</body>
+
+
+</html>
