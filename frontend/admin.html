@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Administración - TicketApp</title>
+  <title>TicketApp | Administración</title>
 
   <!-- Bootstrap + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -13,11 +13,10 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
   <!-- Linkeo CSS 
-    <link rel="stylesheet" href="css/styles.css"-->
+    <link rel="stylesheet" href="css/admin.css"-->
 </head>
 
 <body class="bg-light">
-
   <!-- Toda la barra superior (Navbar) -->
   <nav class="navbar navbar-expand navbar-white bg-white border-bottom sticky-top">
     <div class="container-fluid px-3">
@@ -129,19 +128,25 @@
               </div>
             </div>
 
-            <!-- Con este de por acá se me ocurría colocar un filtro por partidos terminados, pendientes/proximos
-                         y cancelados. La idea sería ver fecha y hora, cuánto del estadio está siendo ocupado (asistencia),
-                         el estado del partido y en "acciones" habría un lapiz que al tocarlo te rediriga a
-                         gestionar partidos > editar partidos y de ser posible programar para que te autocomplete ese partido
-                         -->
+            <!-- Con este de por acá se me ocurría colocar un filtro por partidos creados, pendientes/proximos
+            y cancelados. La idea sería ver fecha y hora, cuánto del estadio está siendo ocupado (asistencia),
+            el estado del partido y en "acciones" habría un lapiz que al tocarlo te rediriga a
+            gestionar partidos > editar partidos y de ser posible programar para que te autocomplete ese partido + x para cancelar partido -->
             <div class="card shadow-sm mb-4">
               <div class="card-body">
+
+                <!-- Menú desplegable para filtrar -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
                   <h5 class="card-title text-success m-0 fw-bold">Partidos Recientes</h5>
                   <select class="form-select form-select-sm w-auto">
-                    <option>Todos los Estados</option>
+                    <option value="Todos los partidos">Todos los partidos</option>
+                    <option value="Partidos creados recientemente">Partidos creados recientemente</option>
+                    <option value="Partidos reprogramados">Partidos reprogramados</option>
+                    <option value="Partidos cancelados">Partidos cancelados</option>
                   </select>
                 </div>
+
+                <!-- Tabla para visualizar los partidos -->
                 <div class="table-responsive">
                   <table class="table align-middle text-muted small">
                     <thead class="table-light text-uppercase">
@@ -149,192 +154,187 @@
                         <th>Partido</th>
                         <th>Fecha y Hora</th>
                         <th>Asistencia</th>
-                        <th>Estado</th>
+                        <th>Tipo</th>
                         <th>Acciones</th>
                       </tr>
                     </thead>
+
+                    <!-- El contenido de la tabla, prototipo -->
                     <tbody>
                       <tr>
                         <td>
-                          <div class="fw-bold text-dark">Real Madrid vs FC Barcelona</div>
-                          <span class="xsmall text-muted">La Liga - Jornada 32</span>
+                          <div class="fw-bold text-dark">EQUIPO1 vs EQUIPO2</div>
                         </td>
-                        <td><span class="fw-bold text-dark">22 May, 2024</span><br>21:00 CEST
+
+                        <td><span class="fw-bold text-dark">DD/MM/AAAA</span>
                         </td>
-                        <td><span class="fw-bold text-dark">78,420</span> / 81,044</td>
+
+                        <td><span class="fw-bold text-dark">Asientos comprados</span> / Asientos totales</td>
                         <td><span class="badge bg-success-subtle text-success border border-success-subtle">●
-                            Activo</span></td>
-                        <td>
-                          <button class="btn btn-sm btn-light border"><i class="bi bi-eye"></i></button>
-                          <button class="btn btn-sm btn-light border"><i class="bi bi-graph-up"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <div class="fw-bold text-dark">Manchester City vs Liverpool</div>
-                          <span class="xsmall text-muted">Premier League</span>
-                        </td>
-                        <td><span class="fw-bold text-dark">25 May, 2024</span><br>18:30 BST
-                        </td>
-                        <td><span class="fw-bold text-success border-bottom border-success border-2">42,100</span>
-                          / 55,000</td>
-                        <td><span
-                            class="badge bg-warning-subtle text-warning border border-warning-subtle">Pendiente</span>
-                        </td>
+                            Nuevo</span></td>
                         <td>
                           <button class="btn btn-sm btn-light border"><i class="bi bi-pencil"></i></button>
-                          <button class="btn btn-sm btn-light border"><i class="bi bi-layout-text-sidebar"></i></button>
+                          <button class="btn btn-sm btn-light border"><i class="bi bi-x-square"></i></button>
                         </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
+
               </div>
+
             </div>
+
           </div>
 
           <!-- Todo el prototipo del gestor de partidos -->
           <div class="tab-pane fade" id="gestionar-partidos" role="tabpanel" aria-labelledby="partidos-tab">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb small">
-                <li class="breadcrumb-item">Gestionar Partidos</li>
-                <li class="breadcrumb-item active" aria-current="page">Crear partido</li>
-              </ol>
-            </nav>
 
+            <!-- Nuestro título introductorio al sector -->
+            <div
+              class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+              <div>
+                <h1 class="h2 text-uppercase fw-bold m-0">Gestión de Partidos</h1>
+                <p class="text-muted small">Administra, crea o modifica los eventos deportivos y sus tarifas.</p>
+              </div>
+            </div>
+
+            <!-- Nuestra tabla para crear / editar partidos (cambiará según lo que elijamos) -->
             <div class="row g-4">
-              <div class="col-12 col-xl-5">
-                <div class="card p-4 border border-dark border-2">
-                  <h4 class="card-title mb-4 fw-bold"><i class="bi bi-calendar-plus me-2"></i>Cargar
-                    nuevo partido</h4>
 
-                  <div class="row g-2 mb-3">
-                    <div class="col-5 text-center">
-                      <label class="form-label small text-muted">Equipo 1:</label>
-                      <input type="text" class="form-control form-control-sm">
-                    </div>
-                    <div class="col-2 d-flex align-items-end justify-content-center pb-2">
-                      <span class="small fw-bold text-muted">VS</span>
-                    </div>
-                    <div class="col-5 text-center">
-                      <label class="form-label small text-muted">Equipo 2:</label>
-                      <input type="text" class="form-control form-control-sm">
-                    </div>
-                  </div>
+              <div class="col-12 col-md-5">
+                <div class="card shadow-sm border border-2 border-primary-subtle">
+                  <div class="card-body">
+                    <h5 class="card-title text-primary mb-4 fw-bold" id="form-partido-titulo">
+                      <i class="bi bi-plus-circle-fill me-2"></i>Cargar Nuevo Partido
+                    </h5>
 
-                  <div class="mb-3 text-center">
-                    <label class="form-label small text-muted d-block">Fecha y hora:</label>
-                    <div class="d-flex gap-2 justify-content-center">
-                      <input type="text" class="form-control form-control-sm w-50">
-                      <input type="text" class="form-control form-control-sm w-25">
-                    </div>
-                  </div>
+                    <form id="form-partido">
+                      <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Equipo1</label>
+                        <input type="text" class="form-content form-control form-control-sm" placeholder="Ej: Argentina"
+                          required>
+                      </div>
 
-                  <p class="small text-muted mb-2">Definir precios por sector:</p>
-                  <div class="row g-2 mb-4">
-                    <div class="col-6 mb-2">
-                      <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-transparent text-muted border-end-0 small">SECTOR
-                          $</span>
-                        <input type="text" class="form-control border-start-0">
+                      <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Equipo2</label>
+                        <input type="text" class="form-content form-control form-control-sm" placeholder="Ej: Francia"
+                          required>
                       </div>
-                    </div>
-                    <div class="col-6 mb-2">
-                      <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-transparent text-muted border-end-0 small">SECTOR
-                          $</span>
-                        <input type="text" class="form-control border-start-0">
-                      </div>
-                    </div>
-                    <div class="col-6 mb-2">
-                      <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-transparent text-muted border-end-0 small">SECTOR
-                          $</span>
-                        <input type="text" class="form-control border-start-0">
-                      </div>
-                    </div>
-                    <div class="col-6 mb-2">
-                      <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-transparent text-muted border-end-0 small">SECTOR
-                          $</span>
-                        <input type="text" class="form-control border-start-0">
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-transparent text-muted border-end-0 small">SECTOR
-                          $</span>
-                        <input type="text" class="form-control border-start-0">
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="input-group input-group-sm">
-                        <span class="input-group-text bg-transparent text-muted border-end-0 small">SECTOR
-                          $</span>
-                        <input type="text" class="form-control border-start-0">
-                      </div>
-                    </div>
-                  </div>
 
-                  <div class="text-center">
-                    <button class="btn btn-secondary px-4 py-2" type="button">Crear partido</button>
+                      <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted">Fecha y Hora del Encuentro</label>
+                        <input type="datetime-local" class="form-control form-control-sm" required>
+                      </div>
+
+                      <!-- Este es el apartado prototipo, pero la idea sería que el admin pueda crear sectores y ponerle precio -->
+                      <hr class="text-muted my-3">
+
+                      <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="small fw-bold text-dark m-0">
+                          <i class="bi bi-tags-fill me-2"></i>Definir Precios por Sector ($)
+                        </h6>
+                        <button type="button" class="btn btn-outline-primary btn-sm extra-small fw-bold px-2 py-1"
+                          id="btn-agregar-sector">
+                          <i class="bi bi-plus-lg me-1"></i>Agregar Sector
+                        </button>
+                      </div>
+
+                      <!-- Un par de ejemplos para visualizar mejor la idea -->
+                      <div class="row g-2 mb-4">
+                        <div class="col-6">
+                          <label class="form-label text-muted extra-small m-0">Sector VIP</label>
+                          <div class="input-group input-group-sm">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" placeholder="0.00" min="0" required>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label text-muted extra-small m-0">Sector Platea</label>
+                          <div class="input-group input-group-sm">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" placeholder="0.00" min="0" required>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label text-muted extra-small m-0">Sector General</label>
+                          <div class="input-group input-group-sm">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" placeholder="0.00" min="0" required>
+                          </div>
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label text-muted extra-small m-0">Sector Popular</label>
+                          <div class="input-group input-group-sm">
+                            <span class="input-group-text">$</span>
+                            <input type="number" class="form-control" placeholder="0.00" min="0" required>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-sm fw-bold py-2" id="btn-guardar-partido">
+                          Guardar Partido
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
               </div>
 
-              <div class="col-12 col-xl-7">
-                <h4 class="mb-4 fw-bold">(Logo) Partidos Cargados</h4>
-                <div class="table-responsive">
-                  <table class="table table-bordered align-middle text-center small border-dark">
-                    <thead class="table-light">
-                      <tr>
-                        <th>Equipos</th>
-                        <th>Fecha y Hora</th>
-                        <th>Ocupación general</th>
-                        <th>Asientos Vendidos</th>
-                        <th>Acción</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td class="text-uppercase text-muted">Equipo1 vs Equipo2</td>
-                        <td class="text-muted">DD/MM/AAAA</td>
-                        <td class="text-muted">% De asientos ocupados</td>
-                        <td class="text-muted">C_Vendida/C_Total</td>
-                        <td>
-                          <button class="btn btn-sm btn-link p-1 text-dark"><i
-                              class="bi bi-pencil-square fs-5"></i></button>
-                          <button class="btn btn-sm btn-link p-1 text-dark"><i class="bi bi-trash fs-5"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>&nbsp;</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td>&nbsp;</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                      <tr>
-                        <td>&nbsp;</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                    </tbody>
-                  </table>
+              <div class="col-12 col-md-7">
+                <div class="card shadow-sm">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <h5 class="card-title text-dark m-0 fw-bold">Partidos Cargados</h5>
+                      <span class="badge bg-secondary-subtle text-secondary small">Total: 1 partidos</span>
+                    </div>
+
+                    <div class="table-responsive">
+                      <table class="table align-middle text-muted small m-0">
+                        <thead class="table-light text-uppercase">
+                          <tr>
+                            <th>Equipos</th>
+                            <th>Fecha y Hora</th>
+                            <th class="text-center">Ocupación / Ventas</th>
+                            <th class="text-end">Acción</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>
+                              <div class="fw-bold text-dark">EQUIPO1 vs EQUIPO2</div>
+                            </td>
+                            <td>
+                              <span class="text-dark fw-semibold">DD/MM/AAAA</span>
+                              <div class="text-muted extra-small">HH:MM hs</div>
+                            </td>
+                            <td class="text-center">
+                              <span class="fw-bold text-dark">0%</span>
+                              <div class="text-muted extra-small">0 / Asientos Totales</div>
+                            </td>
+                            <td class="text-end">
+                              <button class="btn btn-sm btn-outline-warning text-dark border me-1"
+                                title="Editar Partido">
+                                <i class="bi bi-pencil-square"></i>
+                              </button>
+                              <button class="btn btn-sm btn-outline-danger" title="Eliminar Partido">
+                                <i class="bi bi-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                  </div>
                 </div>
               </div>
+
             </div>
           </div>
 
+          <!-- Acá arranca todo el contenido de la Auditoría -->
           <div class="tab-pane fade" id="auditoria" role="tabpanel" aria-labelledby="auditoria-tab">
             <div class="pt-3 pb-2 mb-3 border-bottom">
               <h2 class="fw-bold">Recaudación y Ventas</h2>
@@ -464,6 +464,9 @@
     integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
     crossorigin="anonymous"></script>
 
+  <!-- Linkeo a libraria Chart.js para los gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <!-- Linkeo a nuestros Script-->
 
   <!--
@@ -473,7 +476,6 @@
 
   <script type="module" src="js/auth.js"></script>
   <script type="module" src="js/admin.js"></script>
-
 </body>
 
 </html>
