@@ -117,13 +117,16 @@
               </div>
 
               <!-- Este seria como un recuadro donde podriamos poner toda la estadística del partido más proximo -->
+              <!-- Este seria como un recuadro donde podriamos poner toda la estadística del partido más proximo -->
               <div class="col-12 col-md-4">
-                <div class="card p-3 border border-secondary border-2">
-                  <div class="text-end text-muted small fw-bold">PROX. PART. FALTAN X DIAS</div>
-                  <div class="text-center my-2 fw-bold">TÍTULO PARTIDO</div>
-                  <div class="text-center text-muted small mb-1">HORA:MIN</div>
-                  <div class="text-center small text-muted">EQUIPO1 VS EQUIPO2</div>
-                  <div class="text-center mt-2 small fw-bold text-uppercase">CUANTO % OCUPADO</div>
+                <div class="card p-3 border border-secondary border-2 h-100 d-flex flex-column justify-content-center"
+                  id="kpi-proximo-partido-contenedor">
+                  <div class="text-end text-muted small fw-bold text-uppercase" id="kpi-proximo-partido-tiempo">PROX.
+                    PART. FALTAN X DIAS</div>
+                  <div class="text-center text-muted small mb-1" id="kpi-proximo-partido-hora">HORA:MIN hs</div>
+                  <div class="text-center small text-muted" id="kpi-proximo-partido-equipos">EQUIPO1 VS EQUIPO2</div>
+                  <div class="text-center mt-2 small fw-bold text-uppercase text-muted" style="font-size: 0.7rem;">%
+                    Ocupado (Próximamente)</div>
                 </div>
               </div>
             </div>
@@ -137,12 +140,14 @@
 
                 <!-- Menú desplegable para filtrar -->
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                  <h5 class="card-title text-success m-0 fw-bold">Partidos Recientes</h5>
-                  <select class="form-select form-select-sm w-auto">
-                    <option value="Todos los partidos">Todos los partidos</option>
-                    <option value="Partidos creados recientemente">Partidos creados recientemente</option>
-                    <option value="Partidos reprogramados">Partidos reprogramados</option>
-                    <option value="Partidos cancelados">Partidos cancelados</option>
+                  <h5 class="card-title text-success m-0 fw-bold" id="titulo-listado-dashboard">Listado General de
+                    Partidos</h5>
+                  <select class="form-select form-select-sm w-auto" id="filtro-partidos-dashboard">
+                    <option value="todos">Todos los partidos</option>
+                    <option value="nuevo">Partidos nuevos</option>
+                    <option value="reprogramado">Partidos reprogramados</option>
+                    <option value="cancelado">Partidos cancelados</option>
+                    <option value="finalizado">Partidos finalizados</option>
                   </select>
                 </div>
 
@@ -154,13 +159,13 @@
                         <th>Partido</th>
                         <th>Fecha y Hora</th>
                         <th>Asistencia</th>
-                        <th>Tipo</th>
+                        <th>Estado</th>
                         <th>Acciones</th>
                       </tr>
                     </thead>
 
                     <!-- El contenido de la tabla, prototipo -->
-                    <tbody>
+                    <tbody id="tabla-dashboard-cuerpo">
                       <tr>
                         <td>
                           <div class="fw-bold text-dark">EQUIPO1 vs EQUIPO2</div>
@@ -187,7 +192,7 @@
 
           </div>
 
-          <!-- Todo el prototipo del gestor de partidos -->
+          <!-- Todo el prototipo del "GESTOR DE PARTIDOS" -->
           <div class="tab-pane fade" id="gestionar-partidos" role="tabpanel" aria-labelledby="partidos-tab">
 
             <!-- Nuestro título introductorio al sector -->
@@ -211,20 +216,37 @@
 
                     <form id="form-partido">
                       <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">Equipo1</label>
-                        <input type="text" class="form-content form-control form-control-sm" placeholder="Ej: Argentina"
-                          required>
+                        <label class="form-label small fw-bold text-muted">Equipo (1)</label>
+                        <div class="d-flex gap-2 align-items-center">
+                          <div id="flag-container-1"
+                            class="border rounded d-flex align-items-center justify-content-center bg-white"
+                            style="width: 45px; height: 30px; overflow: hidden;">
+                            <i class="bi bi-globe text-muted small"></i>
+                          </div>
+                          <select class="form-select form-select-sm" id="select-equipo-1" required>
+                            <option value="" selected disabled>Seleccionar país...</option>
+                          </select>
+                        </div>
                       </div>
 
                       <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">Equipo2</label>
-                        <input type="text" class="form-content form-control form-control-sm" placeholder="Ej: Francia"
-                          required>
+                        <label class="form-label small fw-bold text-muted">Equipo (2)</label>
+                        <div class="d-flex gap-2 align-items-center">
+                          <div id="flag-container-2"
+                            class="border rounded d-flex align-items-center justify-content-center bg-white"
+                            style="width: 45px; height: 30px; overflow: hidden;">
+                            <i class="bi bi-globe text-muted small"></i>
+                          </div>
+                          <select class="form-select form-select-sm" id="select-equipo-2" required>
+                            <option value="" selected disabled>Seleccionar país...</option>
+                          </select>
+                        </div>
                       </div>
 
+                      <!-- ID "input-fecha" -->
                       <div class="mb-4">
                         <label class="form-label small fw-bold text-muted">Fecha y Hora del Encuentro</label>
-                        <input type="datetime-local" class="form-control form-control-sm" required>
+                        <input type="datetime-local" class="form-control form-control-sm" id="input-fecha" required>
                       </div>
 
                       <!-- Este es el apartado prototipo, pero la idea sería que el admin pueda crear sectores y ponerle precio -->
@@ -240,41 +262,18 @@
                         </button>
                       </div>
 
-                      <!-- Un par de ejemplos para visualizar mejor la idea -->
-                      <div class="row g-2 mb-4">
-                        <div class="col-6">
-                          <label class="form-label text-muted extra-small m-0">Sector VIP</label>
-                          <div class="input-group input-group-sm">
-                            <span class="input-group-text">$</span>
-                            <input type="number" class="form-control" placeholder="0.00" min="0" required>
-                          </div>
-                        </div>
-                        <div class="col-6">
-                          <label class="form-label text-muted extra-small m-0">Sector Platea</label>
-                          <div class="input-group input-group-sm">
-                            <span class="input-group-text">$</span>
-                            <input type="number" class="form-control" placeholder="0.00" min="0" required>
-                          </div>
-                        </div>
-                        <div class="col-6">
-                          <label class="form-label text-muted extra-small m-0">Sector General</label>
-                          <div class="input-group input-group-sm">
-                            <span class="input-group-text">$</span>
-                            <input type="number" class="form-control" placeholder="0.00" min="0" required>
-                          </div>
-                        </div>
-                        <div class="col-6">
-                          <label class="form-label text-muted extra-small m-0">Sector Popular</label>
-                          <div class="input-group input-group-sm">
-                            <span class="input-group-text">$</span>
-                            <input type="number" class="form-control" placeholder="0.00" min="0" required>
-                          </div>
-                        </div>
+                      <!-- Contenedor dinámico de sectores -->
+                      <div class="row g-2 mb-4" id="contenedor-sectores">
+                        <!-- Los inputs de los sectores se cargarán dinámicamente desde JavaScript -->
                       </div>
 
-                      <div class="d-grid">
+                      <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary btn-sm fw-bold py-2" id="btn-guardar-partido">
                           Guardar Partido
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm fw-bold py-2 d-none"
+                          id="btn-cancelar-edicion">
+                          Cancelar Edición
                         </button>
                       </div>
                     </form>
@@ -282,12 +281,14 @@
                 </div>
               </div>
 
+              <!-- Acá empieza la tabla de los partidos que se cargan al costado -->
               <div class="col-12 col-md-7">
                 <div class="card shadow-sm">
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                       <h5 class="card-title text-dark m-0 fw-bold">Partidos Cargados</h5>
-                      <span class="badge bg-secondary-subtle text-secondary small">Total: 1 partidos</span>
+                      <span class="badge bg-secondary-subtle text-secondary small" id="contador-partidos">Total: 0
+                        partidos</span>
                     </div>
 
                     <div class="table-responsive">
@@ -300,7 +301,10 @@
                             <th class="text-end">Acción</th>
                           </tr>
                         </thead>
-                        <tbody>
+
+                        <!-- Datos de los partidos cargados
+                        ID "tabla-partidos-cuerpo" -->
+                        <tbody id="tabla-partidos-cuerpo">
                           <tr>
                             <td>
                               <div class="fw-bold text-dark">EQUIPO1 vs EQUIPO2</div>
@@ -318,12 +322,13 @@
                                 title="Editar Partido">
                                 <i class="bi bi-pencil-square"></i>
                               </button>
-                              <button class="btn btn-sm btn-outline-danger" title="Eliminar Partido">
-                                <i class="bi bi-trash"></i>
+                              <button class="btn btn-sm btn-outline-danger" title="Cancelar Partido">
+                                <i class="bi bi-x-square"></i>
                               </button>
                             </td>
                           </tr>
                         </tbody>
+
                       </table>
                     </div>
 
@@ -334,7 +339,7 @@
             </div>
           </div>
 
-          <!-- Acá arranca todo el contenido de la Auditoría -->
+          <!-- Acá arranca todo el contenido de "AUDITORÍA" -->
           <div class="tab-pane fade" id="auditoria" role="tabpanel" aria-labelledby="auditoria-tab">
             <div class="pt-3 pb-2 mb-3 border-bottom">
               <h2 class="fw-bold">Recaudación y Ventas</h2>
@@ -349,8 +354,6 @@
                       <span class="text-uppercase text-muted xsmall fw-bold">Monto Total
                         Recaudado</span>
                       <h3 class="fw-bold my-1">$4.28M</h3>
-                      <span class="text-success small fw-bold"><i class="bi bi-arrow-up-right"></i> +12.5% <span
-                          class="text-muted fw-normal">vs. mes anterior</span></span>
                     </div>
                     <span class="badge bg-success-subtle text-success p-2 fs-6 rounded"><i
                         class="bi bi-cash"></i></span>
@@ -366,7 +369,7 @@
                       <span class="text-uppercase text-muted xsmall fw-bold">Tickets
                         Vendidos</span>
                       <h3 class="fw-bold my-1">85.420</h3>
-                      <div class="progress mt-2" style="height: 5px; width: 120px;">
+                      <div class="progress mt-2">
                         <div class="progress-bar bg-success" role="progressbar" style="width: 78%;" aria-valuenow="78"
                           aria-valuemin="0" aria-valuemax="100"></div>
                       </div>
@@ -374,39 +377,6 @@
                     </div>
                     <span class="badge bg-success-subtle text-success p-2 fs-6 rounded"><i
                         class="bi bi-ticket-perforated"></i></span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Cajas prototipo de estadísticas, este podría ser eliminado si no es necesario -->
-              <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card p-3 shadow-sm border-0">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                      <span class="text-uppercase text-muted xsmall fw-bold">Precio Promedio
-                        Ticket</span>
-                      <h3 class="fw-bold my-1">$50.10</h3>
-                      <span class="text-muted xsmall fw-bold">VIP: $120 • Gral: $25</span>
-                    </div>
-                    <span class="badge bg-success-subtle text-success p-2 fs-6 rounded"><i class="bi bi-tag"></i></span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Cajas prototipo de estadísticas, acá iría si se ha cancelado alguna entrada y pedido reembolso -->
-              <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card p-3 shadow-sm border-0">
-                  <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                      <span class="text-uppercase text-muted xsmall fw-bold">Devoluciones /
-                        Fallos</span>
-                      <h3 class="fw-bold my-1">0.42%</h3>
-                      <span
-                        class="badge bg-danger-subtle text-danger border border-danger-subtle text-uppercase xsmall">Estado:
-                        Saludable</span>
-                    </div>
-                    <span class="badge bg-danger-subtle text-danger p-2 fs-6 rounded"><i
-                        class="bi bi-exclamation-triangle"></i></span>
                   </div>
                 </div>
               </div>
@@ -474,8 +444,8 @@
     y redirige si no hay sesión o el rol no es 'admin'.
     admin.js se carga después y puede importar { getSession, logout } de auth.js. -->
 
-  <script type="module" src="js/auth.js"></script>
-  <script type="module" src="js/admin.js"></script>
+  <script type="module" src="./assets/js/modules/auth.js"></script>
+  <script type="module" src="./assets/js/modules/admin.js"></script>
 </body>
 
 </html>
