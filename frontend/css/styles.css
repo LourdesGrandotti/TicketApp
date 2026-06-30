@@ -266,19 +266,29 @@ button {
   justify-content: center;
   width: 36px;
   height: 36px;
-  border: 1px solid var(--gris-2);
+  border: none;
   border-radius: 8px;
-  color: var(--gris-1);
+  color: var(--blanco) !important;
   text-decoration: none;
-  background-color: var(--blanco);
-  transition: background-color 0.2s, border-color 0.2s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  background-color: var(--rojo);
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 4px 10px rgba(237, 25, 77, 0.2);
 }
 
 .btn-volver:hover {
-  background-color: #f7f7f7;
-  border-color: var(--gris-3);
+  opacity: 0.9;
+  color: var(--blanco) !important;
+  transform: translateY(-1px);
+}
+
+.checkout-main-title {
+  font-family: 'Nulshock', sans-serif;
+  font-size: 2rem;
   color: var(--gris-1);
+  margin-top: 1.5rem !important;
+  margin-bottom: 0.5rem !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .page-title {

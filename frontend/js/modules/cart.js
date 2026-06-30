@@ -1,65 +1,44 @@
-import { obtenerAsientosSeleccionados, alternarSeleccionAsiento } from "./seating.js";
+import { obtenerAsientosSeleccionados } from "./seating.js";
 
-// Variable global para limpiar el intervalo del temporizador
-let timerIntervalId = null;
+// ============================================================================
+// 1. CONFIGURACIÓN Y UTILIDADES (SESSION / FORMATTERS)
+// ============================================================================
+
 
 /**
- * Helper: Obtiene o inicializa la hora de expiración en sessionStorage (10 minutos)
+ * Formatea un número de tarjeta agregando un espacio cada 4 dígitos.
+ * @param {string} valor - Número de tarjeta crudo.
+ * @returns {string} Número de tarjeta formateado.
  */
-function obtenerOInicializarExpiracion() {
-    let expiracion = sessionStorage.getItem("cart_expiry");
-    if (!expiracion) {
-        const ahora = Date.now();
-        expiracion = ahora + 10 * 60 * 1000;
-        sessionStorage.setItem("cart_expiry", expiracion.toString());
-    }
-    return parseInt(expiracion, 10);
+function formatearNumeroTarjeta(valor) {
+    const digitos = valor.replace(/\D/g, "");
+    const matches = digitos.match(/\d{1,4}/g);
+    return matches ? matches.join(" ") : "";
 }
 
 /**
- * Helper: Limpia la hora de expiración del sessionStorage
+ * Formatea una fecha de vencimiento (MM/AA) agregando la barra diagonal correspondientemente.
+ * @param {string} valor - Fecha cruda.
+ * @returns {string} Fecha formateada.
  */
-function limpiarExpiracion() {
-    sessionStorage.removeItem("cart_expiry");
-    if (timerIntervalId) {
-        clearInterval(timerIntervalId);
-        timerIntervalId = null;
+function formatearFechaVencimiento(valor) {
+    const digitos = valor.replace(/\D/g, "");
+    if (digitos.length >= 2) {
+        const mes = digitos.substring(0, 2);
+        const anio = digitos.substring(2, 4);
+        return `${mes}/${anio}`;
     }
+    return digitos;
 }
 
-/**
- * Helper: Inicia el temporizador de cuenta regresiva
- */
-function iniciarTimer(elementoTimer) {
-    if (timerIntervalId) {
-        clearInterval(timerIntervalId);
-    }
-
-    const expiracion = obtenerOInicializarExpiracion();
-
-    function actualizar() {
-        const ahora = Date.now();
-        const restante = expiracion - ahora;
-
-        if (restante <= 0) {
-            elementoTimer.textContent = "00:00";
-            clearInterval(timerIntervalId);
-            return;
-        }
-
-        const minutos = Math.floor(restante / 60000);
-        const segundos = Math.floor((restante % 60000) / 1000);
-        const minStr = minutos.toString().padStart(2, "0");
-        const segStr = segundos.toString().padStart(2, "0");
-        elementoTimer.textContent = `${minStr}:${segStr}`;
-    }
-
-    actualizar();
-    timerIntervalId = setInterval(actualizar, 1000);
-}
+// ============================================================================
+// 2. COMPONENTES COMUNES DEL DOM
+// ============================================================================
 
 /**
- * Helper: Renderiza el stepper de progreso de 4 pasos
+ * Renderiza el stepper de progreso (actualizado a 3 pasos).
+ * @param {HTMLElement} contenedor - Contenedor principal.
+ * @param {number} pasoActivo - Paso actual activo (1, 2 o 3).
  */
 function renderizarStepper(contenedor, pasoActivo) {
     const stepperContainer = document.createElement("div");
@@ -71,15 +50,14 @@ function renderizarStepper(contenedor, pasoActivo) {
 
     const progress = document.createElement("div");
     progress.classList.add("stepper-line-progress");
-    const pct = ((pasoActivo - 1) / 3) * 100;
+    const pct = ((pasoActivo - 1) / 2) * 100;
     progress.style.width = `${pct}%`;
     stepperContainer.appendChild(progress);
 
     const pasos = [
-        { num: 1, label: "Entradas" },
-        { num: 2, label: "Resumen" },
-        { num: 3, label: "Pago" },
-        { num: 4, label: "Confirmación" }
+        { num: 1, label: "Resumen" },
+        { num: 2, label: "Pago" },
+        { num: 3, label: "Confirmación" }
     ];
 
     pasos.forEach((p) => {
@@ -95,7 +73,7 @@ function renderizarStepper(contenedor, pasoActivo) {
         circle.classList.add("stepper-circle");
         
         if (p.num < pasoActivo) {
-            circle.innerHTML = `<i class="bi bi-check-lg"></i>`;
+            circle.innerHTML = '<i class="bi bi-check-lg"></i>';
         } else {
             circle.textContent = String(p.num);
         }
@@ -113,7 +91,10 @@ function renderizarStepper(contenedor, pasoActivo) {
 }
 
 /**
- * Helper: Renderiza el encabezado del paso con el botón Volver
+ * Renderiza el encabezado del paso con el botón de volver atrás.
+ * @param {HTMLElement} contenedor - Contenedor principal.
+ * @param {string} tituloTxt - Título de la pantalla actual.
+ * @param {Function} [onVolver] - Callback opcional al hacer clic en volver.
  */
 function renderizarVolver(contenedor, tituloTxt, onVolver) {
     const headerDiv = document.createElement("div");
@@ -123,7 +104,7 @@ function renderizarVolver(contenedor, tituloTxt, onVolver) {
         const btn = document.createElement("a");
         btn.href = "#";
         btn.classList.add("btn-volver");
-        btn.innerHTML = `<i class="bi bi-chevron-left"></i>`;
+        btn.innerHTML = '<i class="bi bi-chevron-left"></i>';
         btn.addEventListener("click", (e) => {
             e.preventDefault();
             onVolver();
@@ -140,151 +121,51 @@ function renderizarVolver(contenedor, tituloTxt, onVolver) {
 }
 
 /**
- * PANTALLA 1: El Carrito de Compras (Entradas Seleccionadas)
+ * Renderiza la interfaz para cuando no hay asientos seleccionados.
+ * @param {HTMLElement} contenedor - Contenedor principal.
  */
-export function renderizarCarrito(contenedor, onIrAPagar) {
-    if (!contenedor) return;
-    contenedor.innerHTML = "";
+function renderizarEstadoVacio(contenedor) {
+    limpiarExpiracion();
 
-    // Limpiar temporizadores viejos
-    if (timerIntervalId) {
-        clearInterval(timerIntervalId);
-    }
+    const emptyContainer = document.createElement("div");
+    emptyContainer.classList.add("empty-cart-container");
 
-    const seleccionados = obtenerAsientosSeleccionados();
-
-    // Si no hay asientos, renderizar estado vacío según el PDF
-    if (seleccionados.length === 0) {
-        limpiarExpiracion();
-
-        const emptyContainer = document.createElement("div");
-        emptyContainer.classList.add("empty-cart-container");
-
-        emptyContainer.innerHTML = `
-            <div class="empty-cart-icon-wrapper">
-                <i class="bi bi-cart"></i>
-            </div>
-            <h2 class="empty-cart-title">Tu carrito está vacío</h2>
-            <p class="empty-cart-subtitle">Todavía no seleccionaste ninguna entrada. Volvé al mapa del estadio y elegí tus asientos.</p>
-            <div class="empty-cart-divider">
-                <div class="empty-cart-divider-icon">
-                    <i class="bi bi-geo-alt-fill"></i>
-                </div>
-            </div>
-            <div class="d-flex flex-column gap-3 align-items-center mb-4">
-                <a href="partidos.html" class="btn-volver-mapa">
-                    <i class="bi bi-chevron-left"></i> Volver al mapa del estadio
-                </a>
-                <button id="btn-simular" class="btn btn-outline-danger px-4 py-2" style="border-radius: 50px; font-weight: 700;">
-                    ⚡ Simular Carga de Entradas (Prueba)
-                </button>
-            </div>
-            <div class="limits-card">
-                <i class="bi bi-cart-dash-fill"></i>
-                <div>
-                    Podés seleccionar hasta <b>4 entradas</b> por partido. Los asientos quedan reservados temporalmente mientras completás la compra.
-                </div>
-            </div>
-        `;
-
-        emptyContainer.querySelector("#btn-simular").addEventListener("click", () => {
-            // Cargar entradas de prueba para la simulación
-            const mockAsientos = ["P-A-1", "P-A-2", "P-B-5"];
-            localStorage.setItem("ticketapp_asientos_seleccionados", JSON.stringify(mockAsientos));
-            // Recargar el módulo
-            window.location.reload();
-        });
-
-        contenedor.appendChild(emptyContainer);
-        return;
-    }
-
-    // Stepper Paso 1
-    renderizarStepper(contenedor, 1);
-
-    // Título y Volver
-    renderizarVolver(contenedor, "ENTRADAS SELECCIONADAS", () => {
-        window.location.href = "partidos.html";
-    });
-
-    // Contenedor de la tabla / lista
-    const listaContainer = document.createElement("div");
-    
-    // Encabezado de la tabla tipo grilla
-    const tableHeader = document.createElement("div");
-    tableHeader.classList.add("table-header-custom");
-    tableHeader.innerHTML = `
-        <div></div>
-        <div>Sector</div>
-        <div>Fila</div>
-        <div>Butaca</div>
-        <div>Precio</div>
-        <div></div>
-    `;
-    listaContainer.appendChild(tableHeader);
-
-    // Elementos de la lista
-    seleccionados.forEach((asiento) => {
-        const card = document.createElement("div");
-        card.classList.add("ticket-card");
-
-        // Identificador del sector (ej. Platea -> PL, Palco -> PA, etc.)
-        const sectorLetra = asiento.idAsiento.split("-")[0] || asiento.sector.slice(0, 2).toUpperCase();
-        
-        card.innerHTML = `
-            <div>
-                <span class="ticket-sector-badge">${sectorLetra}</span>
-            </div>
-            <div class="ticket-sector-title">Sector ${asiento.sector}</div>
-            <div class="ticket-cell-val">${asiento.fila}</div>
-            <div class="ticket-cell-val">${asiento.numero}</div>
-            <div class="ticket-price-val">$${asiento.precio.toLocaleString('es-AR')}</div>
-            <div>
-                <button class="btn-ticket-delete" title="Quitar Entrada">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-        `;
-
-        card.querySelector(".btn-ticket-delete").addEventListener("click", () => {
-            alternarSeleccionAsiento(asiento.idAsiento);
-            renderizarCarrito(contenedor, onIrAPagar);
-        });
-
-        listaContainer.appendChild(card);
-    });
-
-    contenedor.appendChild(listaContainer);
-
-    // Banner del temporizador
-    const timerBanner = document.createElement("div");
-    timerBanner.classList.add("timer-banner");
-    timerBanner.innerHTML = `
-        <div class="timer-banner-text">
-            <i class="bi bi-shield-lock-fill"></i>
-            <span>Tus asientos están reservados temporalmente. Completá la compra antes de que expire el tiempo.</span>
+    emptyContainer.innerHTML = `
+        <div class="empty-cart-icon-wrapper">
+            <i class="bi bi-cart"></i>
         </div>
-        <div class="timer-banner-clock" id="timer-clock">10:00</div>
+        <h2 class="empty-cart-title">Tu carrito está vacío</h2>
+        <p class="empty-cart-subtitle">Todavía no seleccionaste ninguna entrada. Volvé al mapa del estadio y elegí tus asientos.</p>
+        <div class="empty-cart-divider">
+            <div class="empty-cart-divider-icon">
+                <i class="bi bi-geo-alt-fill"></i>
+            </div>
+        </div>
+        <div class="d-flex flex-column gap-3 align-items-center mb-4">
+            <a href="partidos.html" class="btn-volver-mapa">
+                <i class="bi bi-chevron-left"></i> Volver al mapa del estadio
+            </a>
+        </div>
+        <div class="limits-card">
+            <i class="bi bi-cart-dash-fill"></i>
+            <div>
+                Podés seleccionar hasta <b>4 entradas</b> por partido. Los asientos quedan reservados temporalmente mientras completás la compra.
+            </div>
+        </div>
     `;
-    contenedor.appendChild(timerBanner);
-    
-    // Iniciar temporizador regresivo real en el banner
-    iniciarTimer(timerBanner.querySelector("#timer-clock"));
 
-    // Botón Continuar
-    const footerDiv = document.createElement("div");
-    footerDiv.classList.add("clearfix", "mt-4");
-    footerDiv.innerHTML = `
-        <button id="btn-continuar" class="btn-primary-action">
-            Continuar <i class="bi bi-arrow-right"></i>
-        </button>
-    `;
-    footerDiv.querySelector("#btn-continuar").addEventListener("click", onIrAPagar);
-    contenedor.appendChild(footerDiv);
+    contenedor.appendChild(emptyContainer);
 }
 
+// ============================================================================
+// 3. PANTALLAS DEL FLUJO DE PAGO (CHECKOUT SCREENS)
+// ============================================================================
+
 /**
- * PANTALLA 2: Resumen de Compra
+ * PANTALLA 1: Resumen de Compra
+ * @param {HTMLElement} contenedor - Contenedor principal.
+ * @param {Function} onIrAPagar - Callback para avanzar a la pantalla de pago.
+ * @param {Function} onVolver - Callback para regresar a la pantalla de sectores.
  */
 export function renderizarResumen(contenedor, onIrAPagar, onVolver) {
     if (!contenedor) return;
@@ -292,10 +173,13 @@ export function renderizarResumen(contenedor, onIrAPagar, onVolver) {
 
     const seleccionados = obtenerAsientosSeleccionados();
 
-    // Stepper Paso 2
-    renderizarStepper(contenedor, 2);
+    // Si no hay asientos, mostrar estado vacío
+    if (seleccionados.length === 0) {
+        renderizarEstadoVacio(contenedor);
+        return;
+    }
 
-    // Encabezado
+    renderizarStepper(contenedor, 1);
     renderizarVolver(contenedor, "RESUMEN DE COMPRA", onVolver);
 
     // Agrupar entradas por sector
@@ -319,18 +203,14 @@ export function renderizarResumen(contenedor, onIrAPagar, onVolver) {
     const summaryCard = document.createElement("div");
     summaryCard.classList.add("match-summary-card");
 
-    // Header del Partido (Argentina vs Argelia)
     const headerHtml = `
         <div class="match-summary-header">
-            <span class="match-teams">🇦🇷 vs 🇩🇿 Argentina vs Argelia</span>
-            <span class="match-date-location">Martes 16 junio - 22:00 HS · Estadio Mario A. Kempes</span>
+            <span class="match-teams">${datosPartido?.equipos || 'Partido'}</span>
+            <span class="match-date-location">${datosPartido?.fechaHora || ''} · ${datosPartido?.estadio || 'Estadio'}</span>
         </div>
     `;
-    
-    // Cuerpo del Resumen
     let bodyHtml = `<div class="match-summary-body">`;
 
-    // Renderizar grupos de sectores
     Object.keys(sectoresAgrupados).forEach((sectorName) => {
         const grupo = sectoresAgrupados[sectorName];
         const entradasTexto = grupo.asientos.length === 1 ? "1 entrada" : `${grupo.asientos.length} entradas`;
@@ -361,28 +241,22 @@ export function renderizarResumen(contenedor, onIrAPagar, onVolver) {
         `;
     });
 
-    // Fila del cargo por servicio
+    // Fila del cargo por servicio y Total
     bodyHtml += `
         <div class="summary-charge-row">
             <span class="summary-charge-label">Cargo por servicio</span>
             <span class="summary-charge-val">$${cargoServicio.toLocaleString('es-AR')}</span>
         </div>
-    `;
-
-    // Fila del Total
-    bodyHtml += `
         <div class="summary-total-row">
             <span class="summary-total-label">TOTAL</span>
             <span class="summary-total-val">$${totalGral.toLocaleString('es-AR')}</span>
         </div>
-    `;
-
-    bodyHtml += `</div>`; // Cerrar body
+    </div>`;
 
     summaryCard.innerHTML = headerHtml + bodyHtml;
     contenedor.appendChild(summaryCard);
 
-    // Botón Ir al Pago
+    // Botón de acción principal
     const footerDiv = document.createElement("div");
     footerDiv.classList.add("clearfix", "mt-4");
     footerDiv.innerHTML = `
@@ -395,7 +269,10 @@ export function renderizarResumen(contenedor, onIrAPagar, onVolver) {
 }
 
 /**
- * PANTALLA 3: Formulario de Datos de Pago con Tarjeta Interactiva
+ * PANTALLA 2: Formulario de Datos de Pago con Tarjeta Interactiva
+ * @param {HTMLElement} contenedor - Contenedor principal.
+ * @param {Function} onConfirmarCompra - Callback ejecutado con los datos de compra.
+ * @param {Function} onVolver - Callback para regresar al resumen.
  */
 export function renderizarFormularioPago(contenedor, onConfirmarCompra, onVolver) {
     if (!contenedor) return;
@@ -406,16 +283,13 @@ export function renderizarFormularioPago(contenedor, onConfirmarCompra, onVolver
     const cargoServicio = Math.round(subtotalGral * 0.1);
     const totalGral = subtotalGral + cargoServicio;
 
-    // Stepper Paso 3
-    renderizarStepper(contenedor, 3);
-
-    // Encabezado
+    renderizarStepper(contenedor, 2);
     renderizarVolver(contenedor, "DATOS DE PAGO", onVolver);
 
     const layout = document.createElement("div");
     layout.classList.add("payment-layout");
 
-    // Tarjeta gráfica interactiva
+    // Tarjeta gráfica interactiva (Previsualización)
     const cardGraphic = document.createElement("div");
     cardGraphic.classList.add("card-graphic-wrapper");
     cardGraphic.innerHTML = `
@@ -438,7 +312,7 @@ export function renderizarFormularioPago(contenedor, onConfirmarCompra, onVolver
     `;
     layout.appendChild(cardGraphic);
 
-    // Formulario de entrada
+    // Formulario de Pago
     const form = document.createElement("form");
     form.classList.add("payment-form-container");
     form.innerHTML = `
@@ -473,7 +347,7 @@ export function renderizarFormularioPago(contenedor, onConfirmarCompra, onVolver
         </button>
     `;
 
-    // Enlazar eventos para actualizar la tarjeta interactiva
+    // Vinculación de eventos e inputs de tarjeta interactiva
     const inputNombre = form.querySelector("#pago-nombre");
     const inputTarjeta = form.querySelector("#pago-tarjeta");
     const inputExp = form.querySelector("#pago-exp");
@@ -488,17 +362,12 @@ export function renderizarFormularioPago(contenedor, onConfirmarCompra, onVolver
         mockNombre.textContent = val.trim() !== "" ? val : "Nombre Apellido";
     });
 
-    // Formatear número de tarjeta (0000 0000 0000 0000)
+    // Formatear número de tarjeta en tiempo real
     inputTarjeta.addEventListener("input", (e) => {
-        let val = e.target.value.replace(/\D/g, "");
-        if (val.length > 16) val = val.substring(0, 16);
-        
-        // Agregar espacios cada 4 dígitos
-        const matches = val.match(/\d{1,4}/g);
-        const formatted = matches ? matches.join(" ") : "";
+        const valorLimpio = e.target.value.substring(0, 19);
+        const formatted = formattedTarjeta(valorLimpio);
         e.target.value = formatted;
 
-        // Rellenar con puntos hasta 16
         const pad = "•••• •••• •••• ••••";
         const totalLen = formatted.length;
         mockTarjeta.textContent = totalLen > 0 
@@ -506,28 +375,24 @@ export function renderizarFormularioPago(contenedor, onConfirmarCompra, onVolver
             : pad;
     });
 
-    // Formatear fecha de vencimiento (MM/AA)
-    inputExp.addEventListener("input", (e) => {
-        let val = e.target.value.replace(/\D/g, "");
-        if (val.length > 4) val = val.substring(0, 4);
+    // Función auxiliar para formatear número de tarjeta
+    function formattedTarjeta(valor) {
+        return formatearNumeroTarjeta(valor);
+    }
 
-        if (val.length >= 2) {
-            const mes = val.substring(0, 2);
-            const anio = val.substring(2);
-            e.target.value = `${mes}/${anio}`;
-            mockExp.textContent = `${mes}/${anio}`;
-        } else {
-            e.target.value = val;
-            mockExp.textContent = val.trim() !== "" ? val : "MM/AA";
-        }
+    // Formatear fecha de vencimiento en tiempo real
+    inputExp.addEventListener("input", (e) => {
+        const formatted = formatearFechaVencimiento(e.target.value);
+        e.target.value = formatted;
+        mockExp.textContent = formatted.trim() !== "" ? formatted : "MM/AA";
     });
 
-    // Evento de envío del formulario
+    // Evento submit de pago
     form.addEventListener("submit", (e) => {
         e.preventDefault();
         const btn = form.querySelector("#btn-finalizar");
         btn.disabled = true;
-        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> Procesando pago...`;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Procesando pago...';
 
         const datosCompraMock = {
             monto_total: totalGral,
@@ -536,9 +401,7 @@ export function renderizarFormularioPago(contenedor, onConfirmarCompra, onVolver
             asientos_comprados: seleccionados.map(a => a.idAsiento)
         };
 
-        // Detener temporizador
         limpiarExpiracion();
-
         onConfirmarCompra(datosCompraMock);
     });
 
@@ -546,71 +409,43 @@ export function renderizarFormularioPago(contenedor, onConfirmarCompra, onVolver
     contenedor.appendChild(layout);
 }
 
+// ============================================================================
+// 4. CONFIRMACIÓN Y COMPRA EXITOSA
+// ============================================================================
+
 /**
- * PANTALLA 4: Compra Exitosa (Confirmación)
+ * PANTALLA 3: Compra Exitosa (Confirmación)
+ * @param {HTMLElement} contenedor - Contenedor principal.
+ * @param {string} numeroOrden - Número de orden de la compra efectuada (C-XXXXX).
  */
 export function renderizarCompraExitosa(contenedor, numeroOrden) {
     if (!contenedor) return;
     contenedor.innerHTML = "";
 
-    const seleccionados = obtenerAsientosSeleccionados();
-
-    // Stepper Paso 4
-    renderizarStepper(contenedor, 4);
+    renderizarStepper(contenedor, 3);
 
     const successDiv = document.createElement("div");
     successDiv.classList.add("success-container");
 
-    // Ícono de éxito, título y subtítulo
-    const successHeaderHtml = `
+    successDiv.innerHTML = `
         <div class="success-icon-wrapper">
             <i class="bi bi-check-lg"></i>
         </div>
         <h1 class="success-title">¡COMPRA EXITOSA!</h1>
         <p class="success-subtitle">Tu pago fue procesado correctamente. Ya podés disfrutar del partido.</p>
-    `;
-
-    // Tarjeta del número de orden
-    const orderBoxHtml = `
+        
         <div class="order-number-box">
             <div class="order-number-label">Número de orden</div>
             <div class="order-number-val">${numeroOrden}</div>
             <div class="order-number-note">Guardá este número para tus registros</div>
         </div>
-    `;
 
-    // Resumen del partido y asientos
-    let summaryHtml = `
-        <div class="success-match-card">
-            <div class="success-match-header">
-                <span>⚽ Argentina vs Argelia</span>
-            </div>
-            <div class="success-match-body">
-    `;
-
-    seleccionados.forEach((asiento) => {
-        summaryHtml += `
-            <div class="success-match-row">
-                <span class="success-match-seat">Sector ${asiento.sector} · Fila ${asiento.fila} · Butaca ${asiento.numero}</span>
-                <span class="success-match-price">$${asiento.precio.toLocaleString('es-AR')}</span>
-            </div>
-        `;
-    });
-
-    summaryHtml += `
-            </div>
-        </div>
-    `;
-
-    // Botón Volver y nota final
-    const footerHtml = `
         <a href="home.html" class="btn-success-home">Volver al inicio</a>
         <div class="success-email-note">Recibirás una confirmación en tu correo electrónico</div>
     `;
 
-    successDiv.innerHTML = successHeaderHtml + orderBoxHtml + summaryHtml + footerHtml;
     contenedor.appendChild(successDiv);
 
-    // Como la compra fue exitosa, limpiamos el localStorage de los asientos seleccionados
+    // Limpieza de estados en localStorage
     localStorage.removeItem("ticketapp_asientos_seleccionados");
 }
