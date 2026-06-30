@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketApp - Carrito de Compras</title>
+    <!-- Favicon -->
+    <link class="rounded" rel="icon" href="assets/images/image.png" type="image/png">
+    
+    <!-- Iconos Externos (Boxicons + Bootstrap Icons) -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Flag Icons (Banderas) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        
+    <!-- Hoja de Estilos Compartida -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-light d-flex flex-column min-vh-100 font-montserrat">
+
+    <!-- Header con logo, enlaces y botón de sesión -->
+    <header class="w-100 bg-white border-bottom py-3 px-4 mb-auto shadow-sm">
+        <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <!-- Logo Oficial -->
+            <a href="home.html" class="d-flex align-items-center gap-2 text-decoration-none">
+                <img src="assets/images/image.png" alt="Logo TicketApp" class="img-fluid object-fit-contain rounded" width="120" height="35">
+            </a>
+            
+            <!-- Enlaces e Inicio de Sesión -->
+            <div class="d-flex align-items-center gap-3">
+                <a href="partidos.html" class="text-decoration-none text-dark small fw-medium">Partidos</a>
+                <a href="#" class="text-decoration-none text-dark small fw-medium protected-link">Mis entradas</a>
+                
+                <span class="text-secondary d-none d-sm-inline">|</span>
+                
+                <a href="#" id="session-btn" class="btn btn-brand rounded-pill px-4 btn-sm fw-bold text-uppercase text-nowrap">Ingresar</a>
+                
+                <span class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle text-muted" style="width: 38px; height: 38px;">
+                    <i class="bx bx-user fs-4"></i>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor dinámico del Checkout -->
+    <main class="container my-5 py-4 w-100" style="max-width: 750px;" id="modulo-checkout">
+        <!-- Se inyecta dinámicamente por JS (cart.js) -->
+    </main>
+
+    <!-- Footer oficial de la captura -->
+    <footer class="bg-brand text-white py-4 mt-auto border-top border-danger border-opacity-25">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center">
+                <!-- Logo en blanco -->
+                <div class="col-12 col-md-4 text-center text-md-start mb-3 mb-md-0">
+                    <img src="assets/images/image.png" alt="TicketApp Logo" class="img-fluid bg-light border border-secondary-subtle rounded p-1" width="120" height="35" style="filter: brightness(0) invert(1);">
+                </div>
+                <!-- Derechos de Autor -->
+                <div class="col-12 col-md-4 text-center mb-3 mb-md-0 small opacity-75">
+                    &copy; 2026 Todos los derechos reservados
+                </div>
+                <!-- Enlaces Footer -->
+                <div class="col-12 col-md-4 text-center text-md-end small d-flex justify-content-center justify-content-md-end gap-3 text-white-50">
+                    <a href="#" class="text-white text-decoration-none opacity-75 hover-opacity protected-link">Mis entradas</a>
+                    <a href="partidos.html" class="text-white text-decoration-none opacity-75 hover-opacity">Partidos</a>
+                    <a href="partidos.html" class="text-white text-decoration-none opacity-75 hover-opacity">Entradas</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Ruta de verificación de accesos -->
+    <script type="module" src="js/modules/auth.js"></script>
+
+    <script type="module">
+        // RUTAS UNIFICADAS SEGÚN EL ÁRBOL DE DIRECTORIOS REAL
+        import { inicializarAsientos } from "./js/modules/seating.js";
+        import { renderizarCarrito, renderizarResumenCompra, renderizarFormularioPago, renderizarCompraExitosa } from "./js/modules/cart.js";
+
+        const contenedor = document.getElementById("modulo-checkout");
+        let ordenGenerada = null;
+
+        // Lógica de navegación del flujo
+        function navegarFlujoCheckout(vista) {
+            if (vista === "entradas" || vista === "carrito") {
+                renderizarCarrito(contenedor, () => navegarFlujoCheckout("resumen"));
+            } else if (vista === "resumen") {
+                renderizarResumenCompra(contenedor, () => navegarFlujoCheckout("pago"), () => navegarFlujoCheckout("entradas"));
+            } else if (vista === "pago") {
+                renderizarFormularioPago(contenedor, (datosCompra) => {
+                    // Simulación del servidor remoto (1.5 segundos)
+                    setTimeout(() => {
+                        // Generación de número de orden de 7 dígitos coincidente con screenshot (#6625362)
+                        ordenGenerada = String(Math.floor(Math.random() * 9000000 + 1000000));
+                        
+                        // PERSISTENCIA LOCAL: Impactamos la base de datos de compras
+                        const comprasHistoricas = JSON.parse(localStorage.getItem('compras')) || [];
+                        const nuevaCompra = {
+                            id_compra: "#" + ordenGenerada,
+                            id_usuario: datosCompra.id_usuario,
+                            id_partido: datosCompra.id_partido,
+                            fecha_compra: new Date().toLocaleDateString('es-AR'),
+                            monto_total: datosCompra.monto_total,
+                            asientos_comprados: datosCompra.asientos_comprados
+                        };
+                        comprasHistoricas.push(nuevaCompra);
+                        localStorage.setItem('compras', JSON.stringify(comprasHistoricas));
+
+                        navegarFlujoCheckout("confirmacion");
+                    }, 1500);
+                }, () => navegarFlujoCheckout("resumen"));
+            } else if (vista === "confirmacion" || vista === "exito") {
+                renderizarCompraExitosa(contenedor, ordenGenerada);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Inicializa los asientos en memoria recuperando lo que Persona 4 guardó
+            inicializarAsientos();
+            
+            // Lanza el flujo en el paso 1 (Entradas seleccionadas)
+            navegarFlujoCheckout("entradas");
+
+            // Gestión dinámica de sesión en la cabecera
+            const token = localStorage.getItem('userToken');
+            const sessionBtn = document.getElementById('session-btn');
+            
+            if (sessionBtn) {
+                if (token) {
+                    sessionBtn.textContent = 'Cerrar sesión';
+                    sessionBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const confirmar = confirm("¿Seguro que desea cerrar sesión?");
+                        if (confirmar) {
+                            localStorage.removeItem('userToken');
+                            localStorage.removeItem('currentUser');
+                            localStorage.removeItem('currentUsername');
+                            localStorage.removeItem('userEmail');
+                            localStorage.removeItem('userRole');
+                            window.location.reload();
+                        }
+                    });
+                } else {
+                    sessionBtn.textContent = 'Ingresar';
+                    sessionBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = 'index.html';
+                    });
+                }
+            }
+
+            // Enlaces protegidos
+            const protectedLinks = document.querySelectorAll('.protected-link');
+            protectedLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (!token) {
+                        e.preventDefault();
+                        alert('Debés iniciar sesión para acceder a esta sección.');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

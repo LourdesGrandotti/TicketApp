@@ -1,0 +1,199 @@
+/* =========================================================================
+   VARIABLES GLOBALES Y CONFIGURACIÓN DEL TEMA (COLORES DEL MUNDIAL)
+   ========================================================================= */
+:root {
+  --blanco: #fefefe;
+  --gris-1: #4d4d4d;
+  --rojo: #ed194d;
+  --gris-2: #e6e6e6;
+  --gris-3: #999999;
+}
+
+/* =========================================================================
+   FUENTES TIPOGRÁFICAS LOCALES
+   ========================================================================= */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../assets/fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Nulshock';
+  src: url('../assets/fonts/Nulshock Bd.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Aplicación de fuentes generales */
+body {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--gris-1);
+}
+
+h1,
+h2,
+h3,
+.navbar-brand {
+  font-family: 'Nulshock', sans-serif;
+}
+
+h4,
+h5,
+h6,
+.nav-link,
+label,
+table th,
+button {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+}
+
+/* =========================================================================
+   COLORES DE TEXTOS REQUERIDOS EN ROJO (PEDIDO POR MILI)
+   ========================================================================= */
+/* Cargar nuevo partido, Partidos cargados, labels de formulario y subtítulos */
+#form-partido-titulo,
+.card-title,
+.form-label,
+h6.small {
+  color: var(--rojo) !important;
+}
+
+/* =========================================================================
+   ESTILOS DE LA SIDEBAR (PÍLDORAS REDONDEADAS)
+   ========================================================================= */
+.sidebar .nav-link {
+  color: var(--gris-1) !important;
+  border-radius: 10px !important;
+  margin: 6px 16px;
+  transition: all 0.25s ease-in-out;
+}
+
+.sidebar .nav-link:hover {
+  background-color: var(--gris-2) !important;
+  color: var(--rojo) !important;
+  transform: translateX(4px);
+}
+
+.sidebar .nav-link.active {
+  background-color: var(--rojo) !important;
+  color: var(--blanco) !important;
+  box-shadow: 0 4px 12px rgba(237, 25, 77, 0.25);
+}
+
+.sidebar .nav-link.active i {
+  color: var(--blanco) !important;
+}
+
+/* =========================================================================
+   TARJETA ESPECIAL: PRÓXIMO PARTIDO (KPI ROJO)
+   ========================================================================= */
+#kpi-proximo-partido-contenedor {
+  background-color: var(--rojo) !important;
+  border: none !important;
+  color: var(--blanco) !important;
+  box-shadow: 0 6px 18px rgba(237, 25, 77, 0.3) !important;
+}
+
+#kpi-proximo-partido-contenedor .badge-kpi {
+  background-color: rgba(254, 254, 254, 0.2) !important;
+  color: var(--blanco) !important;
+}
+
+#kpi-proximo-partido-contenedor * {
+  color: var(--blanco) !important;
+}
+
+/* =========================================================================
+   FOCOS E INTERACCIONES DE CAMPOS (COLORES DE MARCA)
+   ========================================================================= */
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--rojo) !important;
+  box-shadow: 0 0 0 3px rgba(237, 25, 77, 0.15) !important;
+}
+
+/* =========================================================================
+   BOTONES CON COLOR ROJO PERSONALIZADO
+   ========================================================================= */
+.btn-primary {
+  background-color: var(--rojo) !important;
+  border-color: var(--rojo) !important;
+}
+
+.btn-primary:hover {
+  background-color: #d1103e !important;
+  border-color: #d1103e !important;
+}
+
+#btn-agregar-sector {
+  color: var(--rojo) !important;
+  border-color: var(--rojo) !important;
+}
+
+#btn-agregar-sector:hover {
+  background-color: var(--rojo) !important;
+  color: var(--blanco) !important;
+}
+
+/* Clases de tamaños auxiliares */
+.xsmall {
+  font-size: 0.72rem;
+}
+
+.extra-small {
+  font-size: 0.75rem;
+}
+
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif !important;
+}
+
+/* =========================================================================
+   ELEMENTOS DE DISEÑO ADAPTADOS PARA ELIMINAR ESTILOS INLINE DEL HTML
+   ========================================================================= */
+.navbar-logo {
+  height: 35px;
+}
+
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+}
+
+.badge-circle {
+  width: 35px;
+  height: 35px;
+}
+
+.flag-wrapper {
+  width: 45px;
+  height: 30px;
+  overflow: hidden;
+}
+
+.chart-container-barras {
+  height: 300px;
+}
+
+.chart-container-dona {
+  height: 200px;
+}
+
+footer {
+  background-color: var(--rojo) !important;
+}
+
+.footer-logo {
+  height: 40px;
+  filter: brightness(0) invert(1);
+}
+
+.legend-color-dot {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  border-radius: 50%;
+}
