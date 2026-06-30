@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketApp - Mi Perfil</title>
+    <!-- Favicon -->
+    <link class="rounded" rel="icon" href="assets/images/image.png" type="image/png">
+   
+    <!-- Iconos Externos (Boxicons + Bootstrap Icons) -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+   
+    <!-- Flag Icons (Banderas) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+   
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+       
+    <!-- Hoja de Estilos Compartida -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-light d-flex flex-column min-vh-100 font-montserrat">
+
+
+    <!-- Header con logo, enlaces y botón de sesión -->
+    <header class="w-100 bg-white border-bottom py-3 px-4 shadow-sm">
+        <div class="container-fluid d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <!-- Logo -->
+            <a href="home.html" class="d-flex align-items-center gap-2 text-decoration-none">
+                <img src="assets/images/image.png" alt="Logo TicketApp" class="img-fluid object-fit-contain rounded" width="120" height="35">
+            </a>
+           
+            <!-- Enlaces e Inicio de Sesión -->
+            <div class="d-flex align-items-center gap-3">
+                <a href="partidos.html" class="text-decoration-none text-dark small fw-medium">Partidos</a>
+                <a href="#" class="text-decoration-none text-dark small fw-medium protected-link">Mis entradas</a>
+               
+                <span class="text-secondary d-none d-sm-inline">|</span>
+               
+                <a href="#" id="session-btn" class="btn btn-brand rounded-pill px-4 btn-sm fw-bold text-uppercase text-nowrap">Ingresar</a>
+               
+                <a href="perfil.html" class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle text-muted text-decoration-none protected-link" style="width: 38px; height: 38px;">
+                    <i class="bx bx-user fs-4"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+
+    <!-- Contenido principal del Perfil -->
+    <main class="container my-5 py-4" style="max-width: 800px;">
+
+
+        <!-- Título de la página -->
+        <h2 class="text-brand fw-bold text-uppercase mb-4">Mi Perfil</h2>
+
+
+        <!-- Tarjeta de Perfil -->
+        <div class="card border-0 shadow-sm rounded-4 bg-white p-4 p-md-5">
+
+
+            <!-- Fila principal: Foto + Datos -->
+            <div class="row g-6 align-items-start">
+
+
+                <!-- Columna izquierda: Foto de perfil -->
+                <div class="col-12 col-md-4 text-center">
+                    <div class="position-relative d-inline-block" id="foto-perfil-container" title="Cambiar foto de perfil">
+                        <img id="foto-perfil"
+                             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' fill='%23adb5bd' viewBox='0 0 16 16'%3E%3Cpath d='M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0'/%3E%3Cpath fill-rule='evenodd' d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1'/%3E%3C/svg%3E"
+                             alt="Foto de perfil"
+                             class="rounded-circle border border-3 border-light-subtle shadow-sm bg-white"
+                             style="width: 160px; height: 160px; object-fit: cover;">
+                        <!-- Ícono de edición (visible solo en modo edición, controlado por JS) -->
+                        <span id="foto-edit-badge" class="position-absolute bottom-0 end-0 bg-brand text-white rounded-circle d-none align-items-center justify-content-center shadow-sm"
+                              style="width: 36px; height: 36px; cursor: pointer;">
+                            <i class="bx bx-camera fs-5"></i>
+                        </span>
+                        <input type="file" id="input-foto-perfil" accept="image/*" class="d-none">
+                    </div>
+                    <p class="text-muted small mt-2 mb-0 d-none" id="foto-hint">Hacé clic en la cámara para cambiar tu foto</p>
+                </div>
+
+
+                <!-- Columna derecha: Datos del usuario -->
+                <div class="col-12 col-md-8">
+
+
+                    <h4 class="fw-bold text-dark mb-1" id="perfil-nombre-header">Cargando...</h4>
+                    <span class="badge badge-brand-subtle rounded-pill px-3 py-1 mb-4" id="perfil-rol-badge">usuario</span>
+
+
+                    <!-- Datos en modo lectura (span) con inputs ocultos para edición -->
+                    <div class="mt-3">
+
+
+                        <!-- Nombre de usuario -->
+                        <div class="d-flex align-items-center gap-2 py-2 border-bottom">
+                            <i class="bx bx-user text-brand fs-5 flex-shrink-0"></i>
+                            <span class="small text-secondary flex-shrink-0" style="min-width: 120px;">Usuario</span>
+                            <span class="fw-semibold text-dark small perfil-dato" id="perfil-username">—</span>
+                            <input type="text" class="form-control form-control-sm d-none perfil-input" id="input-username" placeholder="Nombre de usuario">
+                        </div>
+
+
+                        <!-- Correo electrónico -->
+                        <div class="d-flex align-items-center gap-2 py-2 border-bottom">
+                            <i class="bx bx-envelope text-brand fs-5 flex-shrink-0"></i>
+                            <span class="small text-secondary flex-shrink-0" style="min-width: 120px;">Email</span>
+                            <span class="fw-semibold text-dark small perfil-dato" id="perfil-email">—</span>
+                            <input type="email" class="form-control form-control-sm d-none perfil-input" id="input-email" placeholder="Correo electrónico">
+                        </div>
+
+
+                        <!-- Contraseña -->
+                        <div class="d-flex align-items-center gap-2 py-2 border-bottom">
+                            <i class="bx bx-lock-alt text-brand fs-5 flex-shrink-0"></i>
+                            <span class="small text-secondary flex-shrink-0" style="min-width: 120px;">Contraseña</span>
+                            <span class="fw-semibold text-dark small perfil-dato" id="perfil-password">••••••••</span>
+                            <input type="password" class="form-control form-control-sm d-none perfil-input" id="input-password" placeholder="Nueva contraseña (dejar vacío para no cambiar)">
+                        </div>
+
+                    <!-- Botones de acción -->
+                    <div class="mt-4 d-flex flex-wrap gap-2">
+                        <!-- Modo lectura -->
+                        <button type="button" id="btn-editar-perfil" class="btn btn-brand rounded-pill px-4 fw-bold text-uppercase btn-sm">
+                            <i class="bx bx-edit-alt me-1"></i> Editar perfil
+                        </button>
+
+
+                        <!-- Modo edición (ocultos al inicio) -->
+                        <button type="button" id="btn-guardar-cambios" class="btn btn-brand rounded-pill px-4 fw-bold text-uppercase btn-sm d-none">
+                            <i class="bx bx-check me-1"></i> Guardar cambios
+                        </button>
+                        <button type="button" id="btn-cancelar-edicion" class="btn btn-outline-dark rounded-pill px-4 fw-bold text-uppercase btn-sm d-none">
+                            <i class="bx bx-x me-1"></i> Cancelar
+                        </button>
+
+
+                        <!-- Eliminar cuenta (siempre visible) -->
+                        <button type="button" id="btn-eliminar-cuenta" class="btn btn-outline-danger rounded-pill px-4 fw-bold text-uppercase btn-sm">
+                            <i class="bx bx-trash me-1"></i> Eliminar cuenta
+                        </button>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- Modal Global de Confirmación -->
+    <div class="modal fade" tabindex="-1" role="dialog" id="modalGlobalAlert" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content rounded-3 shadow border-0 p-3 bg-white">
+                <div class="text-center bg-transparent mb-2">
+                    <h5 class="fw-bold text-dark m-0" id="globalAlertTitulo">¿Confirmar acción?</h5>
+                    <p class="text-secondary small m-0 mt-1 d-none" id="globalAlertMensaje">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="d-flex flex-column gap-2 mt-3">
+                    <button type="button" class="btn btn-brand fw-bold rounded-pill py-2" id="globalAlertBtnConfirmar">Confirmar</button>
+                    <button type="button" class="btn btn-light fw-bold rounded-pill py-2" data-bs-dismiss="modal" id="globalAlertBtnCancelar">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="bg-brand text-white py-4 mt-auto border-top border-danger border-opacity-25">
+        <div class="container-fluid px-4">
+            <div class="row align-items-center">
+                <!-- Logo-->
+                <div class="col-12 col-md-4 text-center text-md-start mb-3 mb-md-0">
+                    <img src="assets/images/image.png" alt="TicketApp Logo" class="img-fluid " width="120" height="35">
+                </div>
+                <!-- Derechos de Autor -->
+                <div class="col-12 col-md-4 text-center mb-3 mb-md-0 small opacity-75">
+                    &copy; 2026 Todos los derechos reservados
+                </div>
+                <!-- Enlaces Footer -->
+                <div class="col-12 col-md-4 text-center text-md-end small d-flex justify-content-center justify-content-md-end gap-3 text-white-50">
+                    <a href="#" class="text-white text-decoration-none opacity-75 hover-opacity protected-link">Mis entradas</a>
+                    <a href="partidos.html" class="text-white text-decoration-none opacity-75 hover-opacity">Partidos</a>
+                    <a href="partidos.html" class="text-white text-decoration-none opacity-75 hover-opacity">Entradas</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- Ruta de verificación de accesos -->
+    <script type="module" src="js/modules/auth.js"></script>
+
+
+    <!-- Lógica del perfil -->
+    <script type="module" src="js/modules/profile.js"></script>
+
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+           
+            const token = localStorage.getItem('userToken');
+            const sessionBtn = document.getElementById('session-btn');
+           
+            if (sessionBtn) {
+                if (token) {
+                    sessionBtn.textContent = 'Cerrar sesión';
+                    sessionBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const confirmar = confirm("¿Seguro que desea cerrar sesión?");
+                        if (confirmar) {
+                            localStorage.removeItem('userToken');
+                            localStorage.removeItem('currentUser');
+                            localStorage.removeItem('currentUsername');
+                            localStorage.removeItem('userEmail');
+                            localStorage.removeItem('userRole');
+                            window.location.reload();
+                        }
+                    });
+                } else {
+                    sessionBtn.textContent = 'Ingresar';
+                    sessionBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = 'index.html';
+                    });
+                }
+            }
+
+
+            // Enlaces
+            const protectedLinks = document.querySelectorAll('.protected-link');
+            protectedLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (!token) {
+                        e.preventDefault();
+                        alert('Debés iniciar sesión para acceder a esta sección.');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
