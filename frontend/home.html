@@ -2,73 +2,490 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- ===== SEO ===== -->
-  <title>TicketApp | Comprar Entradas</title>
-  <meta name="description" content="TicketApp – Portal de compra de entradas. Seleccioná tu asiento y pagá en línea de manera rápida y segura." />
-  <meta name="keywords" content="comprar entradas, asientos, estadio, fútbol, tickets, TicketApp" />
-  <meta name="author" content="TicketApp" />
-  <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://ticketapp-g1.netlify.app/home.html" />
-  <meta name="theme-color" content="#ed194d" />
-
-  <!-- ===== FAVICON ===== -->
-  <link rel="icon" type="image/png" href="assets/css/img/image.png" />
-  <link rel="apple-touch-icon" href="assets/css/img/image.png" />
-
-  <!-- ===== OPEN GRAPH (Facebook / WhatsApp / LinkedIn) ===== -->
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="TicketApp" />
-  <meta property="og:title" content="TicketApp | Comprar Entradas" />
-  <meta property="og:description" content="Plataforma de venta de entradas para el Estadio de Fútbol. Elegí tu asiento y comprá tu entrada en minutos." />
-  <meta property="og:url" content="https://ticketapp-g1.netlify.app/home.html" />
-  <meta property="og:image" content="https://ticketapp-g1.netlify.app/assets/css/img/og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="TicketApp – Elegí tu asiento, comprá tu entrada, en minutos" />
-  <meta property="og:locale" content="es_AR" />
-
-  <!-- ===== TWITTER CARD ===== -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="TicketApp | Comprar Entradas" />
-  <meta name="twitter:description" content="Plataforma de venta de entradas para el Estadio de Fútbol. Elegí tu asiento y comprá tu entrada en minutos." />
-  <meta name="twitter:image" content="https://ticketapp-g1.netlify.app/assets/css/img/og-image.png" />
-  <meta name="twitter:image:alt" content="TicketApp – Elegí tu asiento, comprá tu entrada, en minutos" />
-
-  <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketApp - Inicio</title>
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/image.png" type="image/png">
+    <!-- Iconos para la lupa y el carrito -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Flag Icons (Banderas) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Archivo de estilos centralizado de marca -->
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 
-<body class="bg-dark text-light">
+<body class="bg-white text-dark font-montserrat">
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-dark bg-dark border-bottom border-secondary px-4 py-3">
-    <span class="navbar-brand fw-bold"><i class="bi bi-ticket-perforated-fill me-2 text-primary"></i>TicketApp <span
-        class="badge bg-success ms-2" style="font-size:.7rem">USUARIO</span></span>
-    <button id="btn-logout" class="btn btn-outline-danger btn-sm">
-      <i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión
-    </button>
-  </nav>
+    <!-- Sección del Navbar -->
+    <header class="d-flex flex-wrap justify-content-between align-items-center px-4 py-3 border-bottom shadow-sm bg-white">
+        <div class="d-flex align-items-center gap-3 col-12 col-lg-6 mb-3 mb-lg-0">
+            <!-- Logo Oficial -->
+            <a href="home.html">
+                <img src="assets/images/image.png" alt="Logo TicketApp"
+                    class="img-fluid object-fit-contain rounded" width="140" height="40">
+            </a>
 
-  <main class="container-fluid p-4">
-    <h1 class="h4 mb-4">Seleccioná tu Partido y Asiento</h1>
-    <p class="text-muted">Módulos <code>user.js</code> y <code>cart.js</code> se integrarán aquí — mapa de asientos y
-      carrito.</p>
-  </main>
+            <!-- Buscador -->
+            <div class="input-group flex-nowrap w-75">
+                <span class="input-group-text bg-light border-0 rounded-start-pill text-muted px-3">
+                    <i class='bx bx-search fs-5'></i>
+                </span>
+                <input type="text" id="search-input" class="form-control bg-light border-0 rounded-end-pill shadow-none small"
+                    placeholder="Buscar partidos o países">
+            </div>  
+        </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmFgFMa+t+7tViXohFD0lDfS60D" crossorigin="anonymous"></script>
+        <div class="d-flex align-items-center justify-content-end gap-3 col-12 col-lg-6">
+            <a href="#" class="text-decoration-none text-dark small fw-medium text-nowrap protected-link">Ver mis entradas</a>
+            <a href="perfil.html" class="text-decoration-none text-dark small fw-medium text-nowrap protected-link">Ver mi cuenta</a>
 
-  <!--
-    auth.js verifica rol 'user'.
-    user.js y cart.js se integrarán en la siguiente fase.
-  -->
-  <script type="module" src="js/auth.js"></script>
-  <script type="module" src="js/user.js"></script>
+            <a href="carrito.html" class="text-decoration-none text-dark position-relative me-2 protected-link">
+                <i class='bx bx-cart fs-4 text-brand'></i>
+                <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-brand text-white" style="font-size: 0.6rem;">0</span>
+            </a>
+
+            <span class="text-secondary">|</span>
+
+            <!-- Botón de sesión dinámico -->
+            <a href="#" id="session-btn" class="btn btn-brand rounded-pill px-4 fw-bold text-uppercase text-nowrap">Iniciar sesión</a>
+        </div>
+    </header>
+
+    <!-- Sección del Hero Banner -->
+    <section class="hero-banner d-flex justify-content-center align-items-center text-center px-3 py-5 my-4 mx-3 rounded-3 shadow-sm">
+        <div class="d-flex flex-column align-items-center py-5 my-3 col-12 col-md-8">
+            <span class="badge bg-brand text-white rounded-pill px-3 py-2 mb-4 fw-bold" style="font-size: 0.75rem;">WORLD CUP 2026</span>
+            <h1 class="display-4 fw-bold text-white text-uppercase mb-4" style="letter-spacing: 0.5px;">SIENTE LA PASIÓN DEL JUEGO MÁS GRANDE DEL MUNDO</h1>
+            <p class="lead mb-5 col-10 text-white-50">Asegura tu lugar en la historia. Entradas oficiales disponibles para todos los estadios y fases del torneo.</p>
+            <a href="partidos.html" class="btn btn-brand btn-lg px-5 py-3 fw-bold text-uppercase rounded-pill">Comprar entradas</a>
+        </div>
+    </section>
+
+    <!-- Sección Próximos Partidos -->
+    <section class="container-fluid px-4 mt-5 mb-5">
+        <!-- Encabezado de la sección -->
+        <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
+            <div>
+                <h2 class="text-uppercase fw-bold mb-1 text-brand">Próximos partidos</h2>
+                <p class="mb-0 text-muted">No te pierdas los encuentros más emocionantes de la semana</p>
+            </div>
+            <a href="partidos.html" class="text-decoration-none text-uppercase fw-bold text-dark d-flex align-items-center gap-1">
+                Ver calendario completo <i class='bx bx-right-arrow-alt fs-4'></i>
+            </a>
+        </div>
+
+        <!-- Carrusel de Tarjetas (Oculta scrollbars, permite scroll fluido de mouse/tactil) -->
+        <div class="matches-scroll py-2 px-1" id="matches-container">
+
+            <!-- Tarjeta 1 (Sudáfrica vs Canadá) -->
+            <div class="card border-brand rounded-4 flex-shrink-0 p-0 shadow-sm match-card" style="width: 440px; min-width: 440px;">
+                <div class="row g-0 h-100">
+                    <!-- Info Principal -->
+                    <div class="col-9 p-4 bg-white rounded-start-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge badge-brand-subtle rounded-pill px-3 py-2">Dieciseisavos de final</span>
+                            <span class="small fw-bold text-secondary">28 JUN</span>
+                        </div>
+
+                        <div class="row align-items-center text-center my-4">
+                            <!-- Equipo 1 -->
+                            <div class="col-5">
+                                <div class="d-inline-block rounded-circle overflow-hidden border border-light-subtle shadow-sm mb-2" style="width: 55px; height: 55px;">
+                                    <span class="fi fi-za fis w-100 h-100 d-block" style="object-fit: cover; font-size: 55px; line-height: 55px;"></span>
+                                </div>
+                                <div class="fw-bold small text-uppercase text-dark text-truncate">SUDÁFRICA</div>
+                            </div>
+
+                            <!-- VS -->
+                            <div class="col-2">
+                                <span class="fw-bold text-muted" style="font-size: 1.1rem;">VS</span>
+                            </div>
+
+                            <!-- Equipo 2 -->
+                            <div class="col-5">
+                                <div class="d-inline-block rounded-circle overflow-hidden border border-light-subtle shadow-sm mb-2" style="width: 55px; height: 55px;">
+                                    <span class="fi fi-ca fis w-100 h-100 d-block" style="object-fit: cover; font-size: 55px; line-height: 55px;"></span>
+                                </div>
+                                <div class="fw-bold small text-uppercase text-dark text-truncate">CANADÁ</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="small text-muted d-flex align-items-center gap-2 mb-2">
+                                <i class='bx bx-time fs-5 text-secondary'></i> 20:00 Local (GMT-5)
+                            </div>
+                            <div class="small text-muted d-flex align-items-center gap-2">
+                                <i class='bx bx-map fs-5 text-secondary'></i> SoFi Stadium, Los Angeles
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Stub -->
+                    <a href="partidos.html" class="col-3 bg-light rounded-end-4 border-start border-2 border-dashed border-light-subtle d-flex flex-column align-items-center justify-content-center py-4 text-decoration-none hover-opacity">
+                        <i class='bx bx-receipt fs-3 text-brand mb-3'></i>
+                        <div class="d-flex flex-column align-items-center fw-bold text-brand small lh-1 gap-1" style="letter-spacing: 1px;">
+                            <span>T</span>
+                            <span>I</span>
+                            <span>C</span>
+                            <span>K</span>
+                            <span>E</span>
+                            <span>T</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tarjeta 2 (Países Bajos vs Marruecos) -->
+            <div class="card border-brand rounded-4 flex-shrink-0 p-0 shadow-sm match-card" style="width: 440px; min-width: 440px;">
+                <div class="row g-0 h-100">
+                    <!-- Info Principal -->
+                    <div class="col-9 p-4 bg-white rounded-start-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge badge-brand-subtle rounded-pill px-3 py-2">Dieciseisavos de final</span>
+                            <span class="small fw-bold text-secondary">29 JUN</span>
+                        </div>
+
+                        <div class="row align-items-center text-center my-4">
+                            <!-- Equipo 1 -->
+                            <div class="col-5">
+                                <div class="d-inline-block rounded-circle overflow-hidden border border-light-subtle shadow-sm mb-2" style="width: 55px; height: 55px;">
+                                    <span class="fi fi-nl fis w-100 h-100 d-block" style="object-fit: cover; font-size: 55px; line-height: 55px;"></span>
+                                </div>
+                                <div class="fw-bold small text-uppercase text-dark text-truncate">PAÍSES BAJOS</div>
+                            </div>
+
+                            <!-- VS -->
+                            <div class="col-2">
+                                <span class="fw-bold text-muted" style="font-size: 1.1rem;">VS</span>
+                            </div>
+
+                            <!-- Equipo 2 -->
+                            <div class="col-5">
+                                <div class="d-inline-block rounded-circle overflow-hidden border border-light-subtle shadow-sm mb-2" style="width: 55px; height: 55px;">
+                                    <span class="fi fi-ma fis w-100 h-100 d-block" style="object-fit: cover; font-size: 55px; line-height: 55px;"></span>
+                                </div>
+                                <div class="fw-bold small text-uppercase text-dark text-truncate">MARRUECOS</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="small text-muted d-flex align-items-center gap-2 mb-2">
+                                <i class='bx bx-time fs-5 text-secondary'></i> 20:00 Local (GMT-5)
+                            </div>
+                            <div class="small text-muted d-flex align-items-center gap-2">
+                                <i class='bx bx-map fs-5 text-secondary'></i> BBVA Stadium, Monterrey
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Stub -->
+                    <a href="partidos.html" class="col-3 bg-light rounded-end-4 border-start border-2 border-dashed border-light-subtle d-flex flex-column align-items-center justify-content-center py-4 text-decoration-none hover-opacity">
+                        <i class='bx bx-receipt fs-3 text-brand mb-3'></i>
+                        <div class="d-flex flex-column align-items-center fw-bold text-brand small lh-1 gap-1" style="letter-spacing: 1px;">
+                            <span>T</span>
+                            <span>I</span>
+                            <span>C</span>
+                            <span>K</span>
+                            <span>E</span>
+                            <span>T</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tarjeta 3 (Brasil vs Japón) -->
+            <div class="card border-brand rounded-4 flex-shrink-0 p-0 shadow-sm match-card" style="width: 440px; min-width: 440px;">
+                <div class="row g-0 h-100">
+                    <!-- Info Principal -->
+                    <div class="col-9 p-4 bg-white rounded-start-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge badge-brand-subtle rounded-pill px-3 py-2">Dieciseisavos de final</span>
+                            <span class="small fw-bold text-secondary">29 JUN</span>
+                        </div>
+
+                        <div class="row align-items-center text-center my-4">
+                            <!-- Equipo 1 -->
+                            <div class="col-5">
+                                <div class="d-inline-block rounded-circle overflow-hidden border border-light-subtle shadow-sm mb-2" style="width: 55px; height: 55px;">
+                                    <span class="fi fi-br fis w-100 h-100 d-block" style="object-fit: cover; font-size: 55px; line-height: 55px;"></span>
+                                </div>
+                                <div class="fw-bold small text-uppercase text-dark text-truncate">BRASIL</div>
+                            </div>
+
+                            <!-- VS -->
+                            <div class="col-2">
+                                <span class="fw-bold text-muted" style="font-size: 1.1rem;">VS</span>
+                            </div>
+
+                            <!-- Equipo 2 -->
+                            <div class="col-5">
+                                <div class="d-inline-block rounded-circle overflow-hidden border border-light-subtle shadow-sm mb-2" style="width: 55px; height: 55px;">
+                                    <span class="fi fi-jp fis w-100 h-100 d-block" style="object-fit: cover; font-size: 55px; line-height: 55px;"></span>
+                                </div>
+                                <div class="fw-bold small text-uppercase text-dark text-truncate">JAPÓN</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="small text-muted d-flex align-items-center gap-2 mb-2">
+                                <i class='bx bx-time fs-5 text-secondary'></i> 18:00 Local (GMT-7)
+                            </div>
+                            <div class="small text-muted d-flex align-items-center gap-2">
+                                <i class='bx bx-map fs-5 text-secondary'></i> NRG Stadium, Houston
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Stub -->
+                    <a href="partidos.html" class="col-3 bg-light rounded-end-4 border-start border-2 border-dashed border-light-subtle d-flex flex-column align-items-center justify-content-center py-4 text-decoration-none hover-opacity">
+                        <i class='bx bx-receipt fs-3 text-brand mb-3'></i>
+                        <div class="d-flex flex-column align-items-center fw-bold text-brand small lh-1 gap-1" style="letter-spacing: 1px;">
+                            <span>T</span>
+                            <span>I</span>
+                            <span>C</span>
+                            <span>K</span>
+                            <span>E</span>
+                            <span>T</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tarjeta 4 (Paraguay vs Alemania) -->
+            <div class="card border-brand rounded-4 flex-shrink-0 p-0 shadow-sm match-card" style="width: 440px; min-width: 440px;">
+                <div class="row g-0 h-100">
+                    <!-- Info Principal -->
+                    <div class="col-9 p-4 bg-white rounded-start-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge badge-brand-subtle rounded-pill px-3 py-2">Dieciseisavos de final</span>
+                            <span class="small fw-bold text-secondary">29 JUN</span>
+                        </div>
+
+                        <div class="row align-items-center text-center my-4">
+                            <!-- Equipo 1 -->
+                            <div class="col-5">
+                                <div class="d-inline-block rounded-circle overflow-hidden border border-light-subtle shadow-sm mb-2" style="width: 55px; height: 55px;">
+                                    <span class="fi fi-py fis w-100 h-100 d-block" style="object-fit: cover; font-size: 55px; line-height: 55px;"></span>
+                                </div>
+                                <div class="fw-bold small text-uppercase text-dark text-truncate">PARAGUAY</div>
+                            </div>
+
+                            <!-- VS -->
+                            <div class="col-2">
+                                <span class="fw-bold text-muted" style="font-size: 1.1rem;">VS</span>
+                            </div>
+
+                            <!-- Equipo 2 -->
+                            <div class="col-5">
+                                <div class="d-inline-block rounded-circle overflow-hidden border border-light-subtle shadow-sm mb-2" style="width: 55px; height: 55px;">
+                                    <span class="fi fi-de fis w-100 h-100 d-block" style="object-fit: cover; font-size: 55px; line-height: 55px;"></span>
+                                </div>
+                                <div class="fw-bold small text-uppercase text-dark text-truncate">ALEMANIA</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="small text-muted d-flex align-items-center gap-2 mb-2">
+                                <i class='bx bx-time fs-5 text-secondary'></i> 21:00 Local (GMT-4)
+                            </div>
+                            <div class="small text-muted d-flex align-items-center gap-2">
+                                <i class='bx bx-map fs-5 text-secondary'></i> Gillette Stadium, Boston
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Stub -->
+                    <a href="partidos.html" class="col-3 bg-light rounded-end-4 border-start border-2 border-dashed border-light-subtle d-flex flex-column align-items-center justify-content-center py-4 text-decoration-none hover-opacity">
+                        <i class='bx bx-receipt fs-3 text-brand mb-3'></i>
+                        <div class="d-flex flex-column align-items-center fw-bold text-brand small lh-1 gap-1" style="letter-spacing: 1px;">
+                            <span>T</span>
+                            <span>I</span>
+                            <span>C</span>
+                            <span>K</span>
+                            <span>E</span>
+                            <span>T</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tarjeta 5 (Noruega vs Costa de Marfil) -->
+            <div class="card border-brand rounded-4 flex-shrink-0 p-0 shadow-sm match-card" style="width: 440px; min-width: 440px;">
+                <div class="row g-0 h-100">
+                    <!-- Info Principal -->
+                    <div class="col-9 p-4 bg-white rounded-start-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge badge-brand-subtle rounded-pill px-3 py-2">Dieciseisavos de final</span>
+                            <span class="small fw-bold text-secondary">30 JUN</span>
+                        </div>
+
+                        <div class="row align-items-center text-center my-4">
+                            <!-- Equipo 1 -->
+                            <div class="col-5">
+                                <div class="d-inline-block rounded-circle overflow-hidden border border-light-subtle shadow-sm mb-2" style="width: 55px; height: 55px;">
+                                    <span class="fi fi-no fis w-100 h-100 d-block" style="object-fit: cover; font-size: 55px; line-height: 55px;"></span>
+                                </div>
+                                <div class="fw-bold small text-uppercase text-dark text-truncate">NORUEGA</div>
+                            </div>
+
+                            <!-- VS -->
+                            <div class="col-2">
+                                <span class="fw-bold text-muted" style="font-size: 1.1rem;">VS</span>
+                            </div>
+
+                            <!-- Equipo 2 -->
+                            <div class="col-5">
+                                <div class="d-inline-block rounded-circle overflow-hidden border border-light-subtle shadow-sm mb-2" style="width: 55px; height: 55px;">
+                                    <span class="fi fi-ci fis w-100 h-100 d-block" style="object-fit: cover; font-size: 55px; line-height: 55px;"></span>
+                                </div>
+                                <div class="fw-bold small text-uppercase text-dark text-truncate">COSTA DE MARFIL</div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="small text-muted d-flex align-items-center gap-2 mb-2">
+                                <i class='bx bx-time fs-5 text-secondary'></i> 18:00 Local (GMT-7)
+                            </div>
+                            <div class="small text-muted d-flex align-items-center gap-2">
+                                <i class='bx bx-map fs-5 text-secondary'></i> AT&T Stadium, Arlington
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Stub -->
+                    <a href="partidos.html" class="col-3 bg-light rounded-end-4 border-start border-2 border-dashed border-light-subtle d-flex flex-column align-items-center justify-content-center py-4 text-decoration-none hover-opacity">
+                        <i class='bx bx-receipt fs-3 text-brand mb-3'></i>
+                        <div class="d-flex flex-column align-items-center fw-bold text-brand small lh-1 gap-1" style="letter-spacing: 1px;">
+                            <span>T</span>
+                            <span>I</span>
+                            <span>C</span>
+                            <span>K</span>
+                            <span>E</span>
+                            <span>T</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Botón Ver más interactivo en el scroll -->
+            <div class="d-flex align-items-center justify-content-center flex-shrink-0 px-3" style="width: 220px;">
+                <a href="partidos.html" class="btn btn-brand btn-lg rounded-pill px-4 fw-bold text-uppercase text-nowrap hover-opacity">
+                    Ver más <i class='bx bx-right-arrow-alt align-middle fs-4 ms-1'></i>
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-brand text-white pt-5 pb-4 px-4 mt-5">
+        <div class="container-fluid">
+            <div class="row mb-5 align-items-center">
+                <!-- Columna Izquierda (Logo blanco) -->
+                <div class="col-12 col-md-6 mb-4 mb-md-0">
+                    <img src="assets/images/image.png" alt="Logo TicketApp"
+                        class="img-fluid object-fit-contain mb-3 bg-light border border-secondary-subtle rounded p-1"
+                        width="140" height="40" style="filter: brightness(0) invert(1);">
+                    <p class="small text-white-70 col-12 col-md-10 col-lg-8 mb-0 lh-lg opacity-75">
+                        La plataforma líder en gestión de entradas para los eventos deportivos más importantes del planeta.
+                    </p>
+                </div>
+
+                <!-- Columna Derecha -->
+                <div class="col-12 col-md-6 d-flex flex-column align-items-start align-items-md-end text-white">
+                    <div class="text-uppercase small fw-bold mb-3" style="letter-spacing: 1px;">MAPA DEL SITIO</div>
+                    <a href="#" class="text-decoration-none text-white-50 small mb-2 hover-opacity opacity-75 protected-link">Mis entradas</a>
+                    <a href="partidos.html" class="text-decoration-none text-white-50 small hover-opacity opacity-75">Partidos</a>
+                </div>
+            </div>
+
+            <hr class="border-white opacity-25 mb-4">
+
+            <!-- Derechos de autor -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap small opacity-75">
+                <span>&copy; 2026 Todos los derechos reservados</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmxc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <!-- Ruta de verificación de accesos -->
+    <script type="module" src="js/modules/auth.js"></script>
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('userToken');
+            const sessionBtn = document.getElementById('session-btn');
+            
+            // 1. TACTICA DE SESION ACTIVA (INICIAR/CERRAR SESION)
+            if (sessionBtn) {
+                if (token) {
+                    sessionBtn.textContent = 'Cerrar sesión';
+                    sessionBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const confirmar = confirm("¿Seguro que desea cerrar sesión?");
+                        if (confirmar) {
+                            localStorage.removeItem('userToken');
+                            localStorage.removeItem('currentUser');
+                            localStorage.removeItem('currentUsername');
+                            localStorage.removeItem('userEmail');
+                            localStorage.removeItem('userRole');
+                            window.location.reload(); // Recarga para actualizar navbar
+                        }
+                    });
+                } else {
+                    sessionBtn.textContent = 'Iniciar sesión';
+                    sessionBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = 'index.html';
+                    });
+                }
+            }
+
+            // 2. CONTADOR DINAMICO DE CARRITO
+            const cartBadge = document.getElementById('cart-badge');
+            if (cartBadge) {
+                const seleccionados = JSON.parse(localStorage.getItem('ticketapp_asientos_seleccionados')) || [];
+                cartBadge.textContent = seleccionados.length;
+            }
+
+            // 3. ENLACES PROTEGIDOS
+            const protectedLinks = document.querySelectorAll('.protected-link');
+            protectedLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (!token) {
+                        e.preventDefault();
+                        alert('Debés iniciar sesión para acceder a esta sección.');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+
+            // 4. BUSCADOR EN TIEMPO REAL
+            const searchInput = document.getElementById('search-input');
+            searchInput?.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                const cards = document.querySelectorAll('.match-card');
+                
+                cards.forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    if (text.includes(query)) {
+                        card.style.setProperty('display', 'block', 'important');
+                    } else {
+                        card.style.setProperty('display', 'none', 'important');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
