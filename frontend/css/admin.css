@@ -197,3 +197,39 @@ footer {
   display: inline-block;
   border-radius: 50%;
 }
+
+/* =========================================================================
+   PAGINACIÓN ESTILO MUNDIAL (PERSONALIZADA)
+   ========================================================================= */
+.pagination .page-item {
+  margin: 0 2px;
+}
+
+.pagination .page-item .page-link {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e6e6e6;
+  background-color: transparent;
+  transition: all 0.2s;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--rojo) !important;
+  border-color: var(--rojo) !important;
+  color: #ffffff !important;
+}
+
+.pagination .page-item.disabled .page-link {
+  background-color: transparent;
+  border-color: transparent;
+  color: #cccccc;
+  cursor: not-allowed;
+}
+
+.pagination .page-item:not(.active):not(.disabled) .page-link:hover {
+  background-color: #f8f9fa;
+  border-color: #cccccc;
+  color: var(--rojo) !important;
+}

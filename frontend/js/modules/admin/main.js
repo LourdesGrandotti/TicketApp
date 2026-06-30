@@ -28,7 +28,8 @@ import {
   botonCancelarEdicion,
   tablaDashboardCuerpo,
   filtroDashboard,
-  idPartidoEnEdicion
+  idPartidoEnEdicion,
+  establecerPaginaActualDashboard
 } from './ui.js';
 
 // ==========================================
@@ -243,6 +244,7 @@ if (tablaDashboardCuerpo) {
 // Filtro del Dashboard
 if (filtroDashboard) {
   filtroDashboard.addEventListener('change', function () {
+    establecerPaginaActualDashboard(1);
     actualizarTablaDashboard();
   });
 }
@@ -253,7 +255,7 @@ if (btnCerrarSesion) {
   btnCerrarSesion.addEventListener('click', function () {
     const confirmar = confirm("¿Seguro que desea cerrar sesión?");
     if (confirmar) {
-      window.location.href = 'index.html';
+      window.location.href = 'home.html';
     }
   });
 }

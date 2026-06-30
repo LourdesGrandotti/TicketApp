@@ -28,7 +28,8 @@
       <!-- Apartado del usuario y Cerrar Sesión -->
       <div class="d-flex align-items-center ms-auto gap-3">
         <span class="badge bg-danger-subtle text-danger px-3 py-2 fs-6 fw-bold rounded-3">ADMIN</span>
-        <button class="btn btn-secondary btn-sm px-3 py-2 fw-semibold" id="btn-cerrar-sesion" type="button">Cerrar Sesión</button>
+        <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold btn-sm" id="btn-cerrar-sesion"
+          type="button">Cerrar Sesión</button>
       </div>
     </div>
   </nav>
@@ -178,6 +179,11 @@
                       </tr>
                     </tbody>
                   </table>
+                  <nav class="d-flex justify-content-center mt-3" aria-label="Paginación Dashboard">
+                    <ul class="pagination pagination-sm m-0" id="paginacion-dashboard">
+                      <!-- Se cargará dinámicamente -->
+                    </ul>
+                  </nav>
                 </div>
 
               </div>
@@ -323,7 +329,11 @@
 
                       </table>
                     </div>
-
+                    <nav class="d-flex justify-content-center mt-3" aria-label="Paginación Partidos">
+                      <ul class="pagination pagination-sm m-0" id="paginacion-partidos">
+                        <!-- Se cargará dinámicamente -->
+                      </ul>
+                    </nav>
                   </div>
                 </div>
               </div>
@@ -337,10 +347,10 @@
               <h2 class="fw-bold">Recaudación y Ventas</h2>
             </div>
 
-            <!-- Cajas prototipo de estadísticas, acá iría Monto total -->
             <!-- Cajas de estadísticas de Auditoría -->
+
+            <!-- Cajas prototipo de estadísticas, acá iría Monto total (Por ahora simulado) -->
             <div class="row g-3 mb-4">
-              <!-- Monto Total Recaudado -->
               <div class="col-12 col-md-4">
                 <div class="card p-3 shadow-sm border-0 bg-white">
                   <div class="d-flex justify-content-between align-items-start">
@@ -354,7 +364,7 @@
                 </div>
               </div>
 
-              <!-- Tickets Vendidos -->
+              <!-- Tickets Vendidos (Por ahora simulado) -->
               <div class="col-12 col-md-4">
                 <div class="card p-3 shadow-sm border-0 bg-white">
                   <div class="d-flex justify-content-between align-items-start">
@@ -368,7 +378,7 @@
                 </div>
               </div>
 
-              <!-- Porcentaje de Asientos Ocupados -->
+              <!-- Porcentaje de Asientos Ocupados (Por ahora simulado) -->
               <div class="col-12 col-md-4">
                 <div class="card p-3 shadow-sm border-0 bg-white">
                   <div class="d-flex justify-content-between align-items-start">
@@ -382,7 +392,8 @@
               </div>
             </div>
 
-            <!-- Gráficos de Auditoría con Chart.js -->
+            <!-- Gráficos de Auditoría con Chart.js, todos estos gráficos están simulados posiblemente necesite del backend
+            y/o del material del carrito entre otros -->
             <div class="row g-4 mb-4">
               <!-- Gráfico de Barras (Monto por Partido) -->
               <div class="col-12 col-lg-8">

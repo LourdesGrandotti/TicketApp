@@ -31,6 +31,19 @@ export function establecerIdPartidoEnEdicion(valor) {
   idPartidoEnEdicion = valor;
 }
 
+// Variables de estado para la paginación
+export let paginaActualDashboard = 1;
+export let paginaActualPartidos = 1;
+export const LIMITE_PARTIDOS_PAGINA = 7;
+
+export function establecerPaginaActualDashboard(valor) {
+  paginaActualDashboard = valor;
+}
+
+export function establecerPaginaActualPartidos(valor) {
+  paginaActualPartidos = valor;
+}
+
 // Variables para guardar las instancias de los gráficos de Chart.js
 let instanciaGraficoBarras = null;
 let instanciaGraficoDona = null;
@@ -101,6 +114,52 @@ export function cargarSectoresPredeterminados() {
   crearInputSectorHTML('Sector Popular');
 }
 
+// Dibuja los botones de paginación en el contenedor indicado
+function dibujarPaginacion(contenedorId, totalPaginas, paginaActual, setPaginaFunc, renderFunc) {
+  const contenedor = document.getElementById(contenedorId);
+  if (!contenedor) return;
+
+  contenedor.innerHTML = '';
+
+  // Botón Anterior (<)
+  const itemAnterior = document.createElement('li');
+  itemAnterior.className = `page-item ${paginaActual === 1 ? 'disabled' : ''}`;
+  itemAnterior.innerHTML = `<button class="page-link d-flex align-items-center justify-content-center fw-semibold rounded-3 text-dark" type="button" aria-label="Anterior">&lsaquo;</button>`;
+  if (paginaActual > 1) {
+    itemAnterior.querySelector('button').addEventListener('click', function () {
+      setPaginaFunc(paginaActual - 1);
+      renderFunc();
+    });
+  }
+  contenedor.appendChild(itemAnterior);
+
+  // Botones de Números de Página
+  for (let i = 1; i <= totalPaginas; i++) {
+    const itemPagina = document.createElement('li');
+    itemPagina.className = `page-item ${paginaActual === i ? 'active' : ''}`;
+    itemPagina.innerHTML = `<button class="page-link d-flex align-items-center justify-content-center fw-semibold rounded-3 text-dark" type="button">${i}</button>`;
+    if (paginaActual !== i) {
+      itemPagina.querySelector('button').addEventListener('click', function () {
+        setPaginaFunc(i);
+        renderFunc();
+      });
+    }
+    contenedor.appendChild(itemPagina);
+  }
+
+  // Botón Siguiente (>)
+  const itemSiguiente = document.createElement('li');
+  itemSiguiente.className = `page-item ${paginaActual === totalPaginas ? 'disabled' : ''}`;
+  itemSiguiente.innerHTML = `<button class="page-link d-flex align-items-center justify-content-center fw-semibold rounded-3 text-dark" type="button" aria-label="Siguiente">&rsaquo;</button>`;
+  if (paginaActual < totalPaginas) {
+    itemSiguiente.querySelector('button').addEventListener('click', function () {
+      setPaginaFunc(paginaActual + 1);
+      renderFunc();
+    });
+  }
+  contenedor.appendChild(itemSiguiente);
+}
+
 // Dibuja la tabla de gestión de partidos
 export function actualizarTablaPartidos() {
   const partidos = obtenerPartidosDeStorage();
@@ -112,9 +171,19 @@ export function actualizarTablaPartidos() {
     contadorPartidos.textContent = `Total: ${partidosActivos.length} partido${partidosActivos.length === 1 ? '' : 's'}`;
   }
 
+  // Calcular paginación
+  const totalPartidos = partidosActivos.length;
+  const totalPaginas = Math.ceil(totalPartidos / LIMITE_PARTIDOS_PAGINA) || 1;
+  if (paginaActualPartidos > totalPaginas) {
+    paginaActualPartidos = totalPaginas;
+  }
+  const inicio = (paginaActualPartidos - 1) * LIMITE_PARTIDOS_PAGINA;
+  const fin = inicio + LIMITE_PARTIDOS_PAGINA;
+  const partidosAPaginar = partidosActivos.slice(inicio, fin);
+
   tablaPartidosCuerpo.innerHTML = '';
 
-  partidosActivos.forEach(function (partido) {
+  partidosAPaginar.forEach(function (partido) {
     const partesFecha = partido.fecha.split('T');
     const fechaFormateada = partesFecha[0] || '---';
     const horaFormateada = partesFecha[1] || '00:00';
@@ -160,6 +229,8 @@ export function actualizarTablaPartidos() {
     `;
     tablaPartidosCuerpo.appendChild(fila);
   });
+
+  dibujarPaginacion('paginacion-partidos', totalPaginas, paginaActualPartidos, establecerPaginaActualPartidos, actualizarTablaPartidos);
 }
 
 // Dibuja la tabla del Dashboard General de partidos
@@ -169,13 +240,23 @@ export function actualizarTablaDashboard() {
   const partidos = obtenerPartidosDeStorage();
   const filtroVal = filtroDashboard?.value || 'todos';
 
-  tablaDashboardCuerpo.innerHTML = '';
-
   const partidosFiltrados = partidos.filter(function (partido) {
     const estadoReal = obtenerEstadoReal(partido);
     if (filtroVal === 'todos') return true;
     return estadoReal === filtroVal;
   });
+
+  // Calcular paginación
+  const totalPartidos = partidosFiltrados.length;
+  const totalPaginas = Math.ceil(totalPartidos / LIMITE_PARTIDOS_PAGINA) || 1;
+  if (paginaActualDashboard > totalPaginas) {
+    paginaActualDashboard = totalPaginas;
+  }
+  const inicio = (paginaActualDashboard - 1) * LIMITE_PARTIDOS_PAGINA;
+  const fin = inicio + LIMITE_PARTIDOS_PAGINA;
+  const partidosAPaginar = partidosFiltrados.slice(inicio, fin);
+
+  tablaDashboardCuerpo.innerHTML = '';
 
   if (partidosFiltrados.length === 0) {
     tablaDashboardCuerpo.innerHTML = `
@@ -183,10 +264,11 @@ export function actualizarTablaDashboard() {
         <td colspan="5" class="text-center text-muted py-3">No hay partidos registrados para mostrar.</td>
       </tr>
     `;
+    dibujarPaginacion('paginacion-dashboard', 1, 1, establecerPaginaActualDashboard, actualizarTablaDashboard);
     return;
   }
 
-  partidosFiltrados.forEach(function (partido) {
+  partidosAPaginar.forEach(function (partido) {
     const partesFecha = partido.fecha.split('T');
     const fechaFormateada = partesFecha[0] || '---';
     const horaFormateada = partesFecha[1] || '00:00';
@@ -230,6 +312,8 @@ export function actualizarTablaDashboard() {
     `;
     tablaDashboardCuerpo.appendChild(fila);
   });
+
+  dibujarPaginacion('paginacion-dashboard', totalPaginas, paginaActualDashboard, establecerPaginaActualDashboard, actualizarTablaDashboard);
 }
 
 // Carga un partido en el formulario de edición
@@ -495,50 +579,254 @@ export function actualizarGraficosAuditoria() {
 
 // Inicializa partidos de muestra
 export function inicializarPartidosDeMuestra() {
-  const partidosExistentes = obtenerPartidosDeStorage();
-  if (partidosExistentes.length === 0) {
-    const ahora = new Date();
-    
-    const fechaProximo = new Date();
-    fechaProximo.setDate(ahora.getDate() + 3);
-    fechaProximo.setHours(19, 0, 0, 0);
+  const versionInicializacion = '3'; // Versión para forzar la recreación de los nuevos partidos
+  const versionGuardada = localStorage.getItem('partidos_inicializados_version');
 
-    const fechaPasado = new Date();
-    fechaPasado.setDate(ahora.getDate() - 2);
-    fechaPasado.setHours(17, 30, 0, 0);
-
+  if (versionGuardada !== versionInicializacion) {
     const partidosMuestra = [
       {
-        id: Date.now() - 1000,
-        codigoEquipo1: 'ar',
-        nombreEquipo1: 'Argentina',
-        codigoEquipo2: 'br',
-        nombreEquipo2: 'Brasil',
-        fecha: fechaProximo.toISOString().slice(0, 16),
+        id: 1001,
+        codigoEquipo1: 'za',
+        nombreEquipo1: 'Sudáfrica',
+        codigoEquipo2: 'ca',
+        nombreEquipo2: 'Canadá',
+        fecha: '2026-06-28T16:00',
         sectores: [
-          { nombre: 'Sector VIP', precio: 15000 },
-          { nombre: 'Sector Platea', precio: 8000 },
-          { nombre: 'Sector General', precio: 4000 },
-          { nombre: 'Sector Popular', precio: 2000 }
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'finalizado'
+      },
+      {
+        id: 1002,
+        codigoEquipo1: 'br',
+        nombreEquipo1: 'Brasil',
+        codigoEquipo2: 'jp',
+        nombreEquipo2: 'Japón',
+        fecha: '2026-06-29T14:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'finalizado'
+      },
+      {
+        id: 1003,
+        codigoEquipo1: 'de',
+        nombreEquipo1: 'Alemania',
+        codigoEquipo2: 'py',
+        nombreEquipo2: 'Paraguay',
+        fecha: '2026-06-29T17:30',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'finalizado'
+      },
+      {
+        id: 1004,
+        codigoEquipo1: 'nl',
+        nombreEquipo1: 'Países Bajos',
+        codigoEquipo2: 'ma',
+        nombreEquipo2: 'Marruecos',
+        fecha: '2026-06-29T22:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'finalizado'
+      },
+      {
+        id: 1005,
+        codigoEquipo1: 'ci',
+        nombreEquipo1: 'Costa de Marfil',
+        codigoEquipo2: 'no',
+        nombreEquipo2: 'Noruega',
+        fecha: '2026-06-30T14:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'finalizado'
+      },
+      {
+        id: 1006,
+        codigoEquipo1: 'fr',
+        nombreEquipo1: 'Francia',
+        codigoEquipo2: 'se',
+        nombreEquipo2: 'Suecia',
+        fecha: '2026-06-30T18:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'finalizado'
+      },
+      {
+        id: 1007,
+        codigoEquipo1: 'mx',
+        nombreEquipo1: 'México',
+        codigoEquipo2: 'ec',
+        nombreEquipo2: 'Ecuador',
+        fecha: '2026-06-30T22:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
         ],
         estado: 'nuevo'
       },
       {
-        id: Date.now() - 2000,
-        codigoEquipo1: 'de',
-        nombreEquipo1: 'Alemania',
-        codigoEquipo2: 'fr',
-        nombreEquipo2: 'Francia',
-        fecha: fechaPasado.toISOString().slice(0, 16),
+        id: 1008,
+        codigoEquipo1: 'gb-eng',
+        nombreEquipo1: 'Inglaterra',
+        codigoEquipo2: 'cd',
+        nombreEquipo2: 'RD Congo',
+        fecha: '2026-07-01T13:00',
         sectores: [
-          { nombre: 'Sector VIP', precio: 12000 },
-          { nombre: 'Sector Platea', precio: 6500 },
-          { nombre: 'Sector General', precio: 3000 },
-          { nombre: 'Sector Popular', precio: 1500 }
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
         ],
-        estado: 'finalizado'
+        estado: 'nuevo'
+      },
+      {
+        id: 1009,
+        codigoEquipo1: 'be',
+        nombreEquipo1: 'Bélgica',
+        codigoEquipo2: 'sn',
+        nombreEquipo2: 'Senegal',
+        fecha: '2026-07-01T17:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'nuevo'
+      },
+      {
+        id: 1010,
+        codigoEquipo1: 'us',
+        nombreEquipo1: 'Estados Unidos',
+        codigoEquipo2: 'ba',
+        nombreEquipo2: 'Bosnia y Herzegovina',
+        fecha: '2026-07-01T21:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'nuevo'
+      },
+      {
+        id: 1011,
+        codigoEquipo1: 'es',
+        nombreEquipo1: 'España',
+        codigoEquipo2: 'at',
+        nombreEquipo2: 'Austria',
+        fecha: '2026-07-02T16:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'nuevo'
+      },
+      {
+        id: 1012,
+        codigoEquipo1: 'pt',
+        nombreEquipo1: 'Portugal',
+        codigoEquipo2: 'hr',
+        nombreEquipo2: 'Croacia',
+        fecha: '2026-07-02T20:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'nuevo'
+      },
+      {
+        id: 1013,
+        codigoEquipo1: 'ch',
+        nombreEquipo1: 'Suiza',
+        codigoEquipo2: 'dz',
+        nombreEquipo2: 'Argelia',
+        fecha: '2026-07-03T00:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'nuevo'
+      },
+      {
+        id: 1014,
+        codigoEquipo1: 'au',
+        nombreEquipo1: 'Australia',
+        codigoEquipo2: 'eg',
+        nombreEquipo2: 'Egipto',
+        fecha: '2026-07-03T15:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'nuevo'
+      },
+      {
+        id: 1015,
+        codigoEquipo1: 'ar',
+        nombreEquipo1: 'Argentina',
+        codigoEquipo2: 'cv',
+        nombreEquipo2: 'Cabo Verde',
+        fecha: '2026-07-03T19:00',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'nuevo'
+      },
+      {
+        id: 1016,
+        codigoEquipo1: 'co',
+        nombreEquipo1: 'Colombia',
+        codigoEquipo2: 'gh',
+        nombreEquipo2: 'Ghana',
+        fecha: '2026-07-03T22:30',
+        sectores: [
+          { nombre: 'Sector VIP', precio: 5000 },
+          { nombre: 'Sector Platea', precio: 5000 },
+          { nombre: 'Sector General', precio: 5000 },
+          { nombre: 'Sector Popular', precio: 5000 }
+        ],
+        estado: 'nuevo'
       }
     ];
+
     guardarPartidosEnStorage(partidosMuestra);
+    localStorage.setItem('partidos_inicializados_version', versionInicializacion);
   }
 }
