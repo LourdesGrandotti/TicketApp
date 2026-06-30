@@ -4,42 +4,97 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TicketApp – Proceso de compra de entradas. Finalizá tu pago de forma segura." />
     <title>TicketApp | Mi Carrito</title>
 
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <!-- Montserrat Google Font Fallback -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet" />
+    <!-- Estilos propios -->
+    <link rel="stylesheet" href="./assets/css/styles.css" />
 </head>
 
-<body class="bg-light">
+<body class="d-flex flex-column min-vh-100 bg-white">
 
-    <nav class="navbar navbar-dark bg-dark mb-4 shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="partidos.html">← Volver al Estadio</a>
-            <span class="navbar-text text-white-50">TicketApp | Proceso de Compra</span>
+    <!-- Header / Navbar Rediseñado -->
+    <nav class="navbar navbar-expand navbar-light bg-white custom-header shadow-sm mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand" href="home.html">
+                <i class="bi bi-ticket-perforated-fill text-danger"></i> TICKETAPP
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <a class="nav-link d-none d-sm-inline" href="partidos.html">Partidos</a>
+                <a class="nav-link d-none d-sm-inline" href="perfil.html">Mis entradas</a>
+                <button class="btn btn-ingresar" onclick="window.location.href='index.html'">Ingresar</button>
+                <div class="avatar-circle">
+                    <i class="bi bi-person"></i>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <main id="modulo-checkout" class="container my-4" style="max-width: 800px;"></main>
+    <!-- Main Container -->
+    <main class="container my-2 flex-grow-1" style="max-width: 800px;">
+        <div id="modulo-checkout"></div>
+    </main>
 
+    <!-- Footer Rediseñado -->
+    <footer class="custom-footer mt-auto">
+        <div class="footer-container">
+            <div>
+                <h3 class="footer-logo">TICKETAPP</h3>
+            </div>
+            <div>
+                <p class="footer-copy">© 2026 Todos los derechos reservados</p>
+            </div>
+            <div>
+                <ul class="footer-links">
+                    <li><a href="perfil.html">Mis entradas</a></li>
+                    <li><a href="partidos.html">Partidos</a></li>
+                    <li><a href="partidos.html">Entradas</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle CDN -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script type="module">
         import { inicializarAsientos } from "./assets/js/modules/seating.js";
-        import { renderizarCarrito, renderizarFormularioPago, renderizarCompraExitosa } from "./assets/js/modules/cart.js";
+        import { 
+            renderizarCarrito, 
+            renderizarResumen, 
+            renderizarFormularioPago, 
+            renderizarCompraExitosa 
+        } from "./assets/js/modules/cart.js";
 
         const contenedor = document.getElementById("modulo-checkout");
         let ordenGenerada = null;
 
         function navegarFlujoCheckout(vista) {
             if (vista === "carrito") {
-                renderizarCarrito(contenedor, () => navegarFlujoCheckout("pago"));
+                renderizarCarrito(contenedor, () => navegarFlujoCheckout("resumen"));
+            } else if (vista === "resumen") {
+                renderizarResumen(contenedor, 
+                    () => navegarFlujoCheckout("pago"), 
+                    () => navegarFlujoCheckout("carrito")
+                );
             } else if (vista === "pago") {
-                renderizarFormularioPago(contenedor, (datosCompra) => {
-                    // Simulamos el retardo de red del servidor remoto (1.5 segundos)
-                    setTimeout(() => {
-                        // Genera código siguiendo la nomenclatura C-XXXXX que definió el grupo 
-                        ordenGenerada = "C-" + Math.floor(Math.random() * 90000 + 10000);
-                        navegarFlujoCheckout("exito");
-                    }, 1500);
-                });
+                renderizarFormularioPago(contenedor, 
+                    (datosCompra) => {
+                        // Simulamos el retardo de red del servidor remoto (1.5 segundos)
+                        setTimeout(() => {
+                            // Genera código siguiendo la nomenclatura C-XXXXX que definió el grupo 
+                            ordenGenerada = "C-" + Math.floor(Math.random() * 90000 + 10000);
+                            navegarFlujoCheckout("exito");
+                        }, 1500);
+                    },
+                    () => navegarFlujoCheckout("resumen")
+                );
             } else if (vista === "exito") {
                 renderizarCompraExitosa(contenedor, ordenGenerada);
             }
@@ -53,6 +108,5 @@
         });
     </script>
 </body>
-
 
 </html>
