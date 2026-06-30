@@ -1,31 +1,152 @@
-/* Carrusel de Partidos: Ocultar scrollbar y scroll suave */
-#matches-carousel::-webkit-scrollbar { display: none !important; }
-#matches-carousel { -ms-overflow-style: none !important; scrollbar-width: none !important; scroll-behavior: smooth; }
+/* ==========================================================================
+   TICKETAPP - HOJA DE ESTILOS PRINCIPAL
+   ========================================================================== */
 
-/* Controles del Carrusel */
-.carousel-btn-overlay, .carousel-btn-overlay-left { opacity: 0; transition: opacity .3s ease-in-out; }
-#carousel-wrapper:hover .carousel-btn-overlay, #carousel-wrapper:hover .carousel-btn-overlay-left { opacity: 1; }
-.carousel-btn-overlay-left.hidden { opacity: 0 !important; pointer-events: none; }
-.bg-gradient-left { background: linear-gradient(to right, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 40%, rgba(255,255,255,0) 100%); }
-.bg-gradient-right { background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 30%, rgba(255,255,255,1) 100%); }
-.w-120px { width: 120px; }
-.btn-circle-50 { width: 50px; height: 50px; }
-
-/* --- Diseño de Tarjetas y General (Brand) --- */
-.text-brand { color: #ed194d !important; }
-.border-brand { border-color: #ed194d !important; border-width: 2px !important; }
-.bg-brand-light { background-color: #fde8ed !important; color: #ed194d !important; }
-.bg-brand, .btn-brand { background-color: #ed194d !important; color: #fefefe !important; border: none !important; }
-.btn-brand:hover { background-color: #d11241 !important; color: #fefefe !important; }
-
-/* --- Hero Banner --- */
-.hero-section {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('../Imagenes/football-field.jpeg');
-    background-size: cover;
-    background-position: center;
-    color: #fefefe;
+/* 
+ * 1. VARIABLES GLOBALES (:root)
+ * Aquí definimos los colores principales de la marca para mantener consistencia.
+ * Al usar variables, si necesitamos cambiar el color principal (ej. el rojo), 
+ * solo modificamos la línea de --brand-primary y el cambio se aplicará en todo el sitio.
+ */
+:root {
+    /* Paleta de Colores de la Marca */
+    --brand-primary: #ed194d; /* Rojo principal de TicketApp */
+    --brand-hover: #d11241;   /* Rojo más oscuro para efectos de hover (pasar el mouse) */
+    --brand-light: #fde8ed;   /* Rojo muy claro para fondos tenues */
+    --text-light: #fefefe;    /* Blanco casi puro para textos sobre fondos oscuros */
+    
+    /* Superposiciones y Sombras */
+    --overlay-dark: rgba(0, 0, 0, 0.6); /* Negro con 60% de opacidad para fondos legibles */
 }
 
-/* Footer */
-.bg-footer { background-color: #ed194d; }
-.bg-footer, .bg-footer a { color: #fefefe; }
+/* ==========================================================================
+   2. COMPONENTE: CARRUSEL DE PARTIDOS
+   ========================================================================== */
+
+/* Oculta la barra de desplazamiento nativa en navegadores basados en WebKit (Chrome, Safari, Edge) */
+#matches-carousel::-webkit-scrollbar {
+    display: none !important;
+}
+
+/* 
+ * Oculta la barra en Firefox (-ms-overflow-style) e Internet Explorer/Edge antiguo (scrollbar-width).
+ * También habilita el desplazamiento suave nativo al mover las tarjetas.
+ */
+#matches-carousel {
+    -ms-overflow-style: none !important;
+    scrollbar-width: none !important;
+    scroll-behavior: smooth;
+}
+
+/* 
+ * Contenedores de los botones flotantes del carrusel ("Ver más" o flechas).
+ * Empiezan invisibles (opacity: 0) y tienen una transición suave de 0.3 segundos.
+ */
+.carousel-btn-overlay,
+.carousel-btn-overlay-left {
+    opacity: 0;
+    transition: opacity .3s ease-in-out;
+}
+
+/* Cuando el usuario pasa el mouse por encima del área del carrusel, mostramos los botones */
+#carousel-wrapper:hover .carousel-btn-overlay,
+#carousel-wrapper:hover .carousel-btn-overlay-left {
+    opacity: 1;
+}
+
+/* Clase de estado: oculta por completo el botón izquierdo cuando estamos en el principio del scroll */
+.carousel-btn-overlay-left.hidden {
+    opacity: 0 !important;
+    pointer-events: none; /* Evita clics accidentales cuando está oculto */
+}
+
+/* Degradado blanco que difumina las tarjetas en los bordes para dar un efecto de "continuidad visual" */
+.bg-gradient-left {
+    background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0) 100%);
+}
+
+.bg-gradient-right {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.9) 30%, rgba(255, 255, 255, 1) 100%);
+}
+
+/* ==========================================================================
+   3. CLASES DE UTILIDAD GENERALES
+   ========================================================================== */
+
+/* Forza un ancho exacto de 120 píxeles */
+.w-120px {
+    width: 120px;
+}
+
+/* Convierte cualquier elemento (como botones de carrusel) en un círculo perfecto de 50x50px */
+.btn-circle-50 {
+    width: 50px;
+    height: 50px;
+}
+
+/* ==========================================================================
+   4. SISTEMA DE DISEÑO (BRANDING)
+   Nota: Usamos !important en estas utilidades para poder sobreescribir 
+   con seguridad las clases por defecto que trae Bootstrap 5.
+   ========================================================================== */
+
+/* Texto color principal (Rojo TicketApp) */
+.text-brand {
+    color: var(--brand-primary) !important;
+}
+
+/* Borde de 2px sólido color principal */
+.border-brand {
+    border-color: var(--brand-primary) !important;
+    border-width: 2px !important;
+}
+
+/* Fondo rojo súper pálido con texto rojo fuerte (usado principalmente en etiquetas/badges) */
+.bg-brand-light {
+    background-color: var(--brand-light) !important;
+    color: var(--brand-primary) !important;
+}
+
+/* 
+ * Agrupa los botones primarios y fondos primarios.
+ * Comparten fondo rojo, texto blanco y carecen de borde.
+ */
+.bg-brand,
+.btn-brand {
+    background-color: var(--brand-primary) !important;
+    color: var(--text-light) !important;
+    border: none !important;
+}
+
+/* Efecto hover interactivo para oscurecer el rojo del botón al pasar el cursor */
+.btn-brand:hover {
+    background-color: var(--brand-hover) !important;
+    color: var(--text-light) !important;
+}
+
+/* ==========================================================================
+   5. COMPONENTES ESPECÍFICOS Y ESTRUCTURALES
+   ========================================================================== */
+
+/* 
+ * Sección principal del Hero (Banner gigante inicial de "World Cup 2026").
+ * Combina un fondo degradado negro semitransparente con una imagen de la cancha 
+ * de fondo para garantizar que el texto blanco siempre sea legible en cualquier pantalla.
+ */
+.hero-section {
+    background-image: linear-gradient(var(--overlay-dark), var(--overlay-dark)), url('../Imagenes/football-field.jpeg');
+    background-size: cover; /* Cubre todo el espacio disponible sin estirar la imagen */
+    background-position: center; /* Mantiene enfocada la parte central de la imagen */
+    color: var(--text-light); /* Fuerza texto blanco puro */
+}
+
+/* Configuración del color de fondo rojo para el pie de página (Footer) */
+.bg-footer {
+    background-color: var(--brand-primary);
+}
+
+/* Asegura que todos los textos, especialmente los enlaces dentro del footer, sean siempre blancos */
+.bg-footer,
+.bg-footer a {
+    color: var(--text-light);
+}

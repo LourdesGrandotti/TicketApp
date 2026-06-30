@@ -28,7 +28,7 @@
                 height="40">
 
             <!-- Buscador -->
-            <div class="input-group flex-nowrap w-75">
+            <div class="input-group flex-nowrap w-75" id="nav-search">
                 <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted px-3"><i
                         class='bx bx-search'></i></span>
                 <input type="text" class="form-control border-start-0 rounded-end-pill shadow-none"
@@ -37,18 +37,17 @@
         </div>
 
         <div class="d-flex align-items-center justify-content-end gap-3 col-12 col-lg-6">
-            <a href="perfil.html" class="text-decoration-none text-dark small fw-medium text-nowrap">Ver mis entradas</a>
-            <a href="perfil.html" class="text-decoration-none text-dark small fw-medium text-nowrap">Ver mi cuenta</a>
+            <a href="perfil.html" id="nav-account" class="text-decoration-none text-dark small fw-medium text-nowrap">Ver mi cuenta</a>
 
-            <a href="carrito.html" class="text-decoration-none text-dark position-relative me-2">
+            <a href="carrito.html" id="nav-cart" class="text-decoration-none text-dark position-relative me-2">
                 <i class='bx bx-cart fs-4'></i>
                 <span id="cart-badge"
                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill border border-dark bg-light text-dark p-1 d-none"></span>
             </a>
 
-            <span class="text-secondary">|</span>
+            <span id="nav-divider" class="text-secondary">|</span>
 
-            <a href="login.html" class="btn btn-brand rounded-3 fw-bold text-nowrap px-4">Cerrar sesión</a>
+            <a href="login.html" id="nav-auth-btn" class="btn btn-brand rounded-3 fw-bold text-nowrap px-4">Cerrar sesión</a>
         </div>
     </header>
 
@@ -135,6 +134,9 @@
                             <div class="small text-muted d-flex align-items-center gap-2">
                                 <i class='bx bx-map fs-5'></i> SoFi Stadium, Los Angeles
                             </div>
+                            <div class="small fw-bold text-brand d-flex align-items-center gap-2 mt-1">
+                                <i class='bx bx-map fs-5 invisible'></i> Desde $45.00
+                            </div>
                         </div>
                     </div>
 
@@ -192,6 +194,9 @@
                             <div class="small text-muted d-flex align-items-center gap-2">
                                 <i class='bx bx-map fs-5'></i> NRG Stadium, Houston
                             </div>
+                            <div class="small fw-bold text-brand d-flex align-items-center gap-2 mt-1">
+                                <i class='bx bx-map fs-5 invisible'></i> Desde $45.00
+                            </div>
                         </div>
                     </div>
 
@@ -247,6 +252,9 @@
                             </div>
                             <div class="small text-muted d-flex align-items-center gap-2">
                                 <i class='bx bx-map fs-5'></i> Gillette Stadium, Boston
+                            </div>
+                            <div class="small fw-bold text-brand d-flex align-items-center gap-2 mt-1">
+                                <i class='bx bx-map fs-5 invisible'></i> Desde $45.00
                             </div>
                         </div>
                     </div>
@@ -304,6 +312,9 @@
                             <div class="small text-muted d-flex align-items-center gap-2">
                                 <i class='bx bx-map fs-5'></i> BBVA Stadium, Monterrey
                             </div>
+                            <div class="small fw-bold text-brand d-flex align-items-center gap-2 mt-1">
+                                <i class='bx bx-map fs-5 invisible'></i> Desde $45.00
+                            </div>
                         </div>
                     </div>
 
@@ -360,6 +371,9 @@
                             <div class="small text-muted d-flex align-items-center gap-2">
                                 <i class='bx bx-map fs-5'></i> AT&T Stadium, Arlington
                             </div>
+                            <div class="small fw-bold text-brand d-flex align-items-center gap-2 mt-1">
+                                <i class='bx bx-map fs-5 invisible'></i> Desde $45.00
+                            </div>
                         </div>
                     </div>
 
@@ -397,18 +411,6 @@
                     <img src="Imagenes/logoticketappblanco.png" alt="Logo TicketApp blanco"
                         class="img-fluid object-fit-contain mb-3"
                         width="120" height="35">
-                    <p class="small col-12 col-md-10 col-lg-8 mb-0 lh-lg">
-                        La plataforma líder en gestión de entradas<br>
-                        para los eventos deportivos más<br>
-                        importantes del planeta.
-                    </p>
-                </div>
-
-                <!-- Columna Derecha -->
-                <div class="col-12 col-md-6 d-flex flex-column align-items-start align-items-md-end">
-                    <div class="text-uppercase small fw-bold mb-3">MAPA DEL SITIO</div>
-                    <a href="perfil.html" class="text-decoration-none small mb-3">Mis entradas</a>
-                    <a href="calendarioDePartidos.html" class="text-decoration-none small">Partidos</a>
                 </div>
             </div>
 
@@ -421,9 +423,24 @@
         </div>
     </footer>
 
+    <!-- Modal de Confirmación de Cierre de Sesión -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <!-- Contenido del modal -->
+            <div class="modal-content border-0 shadow-lg rounded-4 p-4 text-center">
+                <!-- Título del modal -->
+                <h4 class="fw-bold mb-4">¿Estás seguro de que quieres cerrar sesión?</h4>
+                <!-- Botón de confirmar cierre (Rojo) -->
+                <button type="button" id="confirm-logout-btn" class="btn btn-brand rounded-3 fw-bold w-100 py-3 mb-3">Cerrar sesión</button>
+                <!-- Botón de cancelar (Blanco con borde) -->
+                <button type="button" class="btn bg-white border border-secondary-subtle rounded-3 fw-bold w-100 py-3 text-dark" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmxc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
     <script src="CSS y JS/script.js"></script>
 </body>
