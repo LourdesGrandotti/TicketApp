@@ -4,21 +4,23 @@
  * Módulo de PERSONA 4 — TicketApp
  *
  * Pantallas cubiertas:
- *   - Secciones disponibles   -> renderizarMapaSectores()
- *   - Ver sección             -> renderizarListaAsientos()
- *   - Seleccionar asientos    -> (incluido en renderizarListaAsientos, vía clicks)
+ *   - Ver asientos de un sector  -> renderizarListaAsientos()
+ *   - Seleccionar asientos       -> (incluido en renderizarListaAsientos, vía clicks)
  *   - Mostrar asientos seleccionados -> renderizarResumenSeleccion()
+ *
+ * Nota: La pantalla de mapa de sectores ya está resuelta por Persona 3 en
+ *   estadio.html + matches.js, por lo que renderizarMapaSectores() fue
+ *   eliminada de este módulo para evitar dos sistemas de sectores en paralelo.
  *
  * Reglas de oro aplicadas:
  *   1. DOM 100% dinámico (createElement + appendChild + dataset), sin innerHTML
- *      para los nodos de asientos/sectores.
+ *      para los nodos de asientos.
  *   2. Sincronización entre pestañas con window.addEventListener('storage', ...).
  *      Cero setInterval, cero polling.
  *   3. Todos los filtros de disponibilidad se aplican con .filter()/.find()
  *      sobre el array `_asientos` en memoria. Nunca se filtra recorriendo el DOM.
  *   4. Funciones puras y exportadas, pensadas para recibir en el futuro un
- *      array de asientos que venga de fetch() a una API real en lugar de
- *      generarAsientosMock().
+ *      array de asientos que venga de fetch() a una API real.
  * ---------------------------------------------------------------------------
  */
 
@@ -34,32 +36,36 @@ import {
  * ==========================================================================*/
 
 /**
- * Catálogo de sectores del estadio. Esto es lo más parecido a una tabla
- * "Sectores" que vendría del backend (GET /api/sectores).
- * @typedef {{ idSector: number, nombre: string, filas: number, asientosPorFila: number, precio: number }} Sector
+ * Precios por "zona" del estadio, derivados de la primera letra del ID de sector.
+ * Esto espeja exactamente el objeto SECTOR_PRICES de matches.js:
+ *   A = $270.000, B = $180.000, C = $140.000, D = $350.000
+ * @type {Record<string, number>}
  */
-export const SECTORES = [
-    { idSector: 1, nombre: "Norte", filas: 5, asientosPorFila: 10, precio: 15000 },
-    { idSector: 2, nombre: "Sur", filas: 5, asientosPorFila: 10, precio: 15000 },
-    { idSector: 3, nombre: "Platea", filas: 4, asientosPorFila: 8, precio: 35000 },
-    { idSector: 4, nombre: "Palco", filas: 2, asientosPorFila: 6, precio: 60000 },
-];
+const PRECIOS_POR_ZONA = {
+    A: 270000,
+    B: 180000,
+    C: 140000,
+    D: 350000,
+};
 
 /**
- * Array en memoria con TODOS los asientos de TODOS los sectores.
- * Es la "fuente de verdad" del módulo. Se inicializa con generarAsientosMock()
- * y, el día de mañana, se puede reemplazar por el resultado de:
- *   const _asientos = await fetch('/api/asientos').then(r => r.json());
- * sin que el resto del módulo cambie una sola línea, porque la forma del
- * objeto Asiento se mantiene igual.
- * @type {Asiento[]}
+ * Configuración de filas y asientos por fila para cada zona.
+ * Al tener muchos sectores pequeños (A1..A30, D1..D26, etc.), cada sector
+ * individual tiene pocos asientos; definimos la grilla por zona.
+ *
+ * @type {Record<string, { filas: number, asientosPorFila: number }>}
  */
-let _asientos = [];
+const CONFIG_ZONA = {
+    A: { filas: 8, asientosPorFila: 6 },   // sectores del anillo interior
+    B: { filas: 8, asientosPorFila: 6 },  // sectores de tribuna norte/sur
+    C: { filas: 8, asientosPorFila: 6 },  // sectores de tribuna exterior
+    D: { filas: 8, asientosPorFila: 6 },   // sectores de curva exterior
+};
 
 /**
- * @typedef {{
+ * @typedef {{\
  *   idAsiento: string,
- *   idSector: number,
+ *   idSector: string,
  *   sector: string,
  *   fila: string,
  *   numero: number,
@@ -69,54 +75,70 @@ let _asientos = [];
  */
 
 /**
- * Genera el array mock de asientos para un sector dado, simulando lo que
- * en el futuro será la respuesta de GET /api/sectores/:id/asientos.
- * Si no se pasa idSector, genera los asientos de TODOS los sectores.
- * @param {number} [idSector]
+ * Array en memoria con TODOS los asientos del sector activo.
+ * Es la "fuente de verdad" del módulo.
+ * @type {Asiento[]}
+ */
+let _asientos = [];
+
+/**
+ * Extrae la letra de zona de un ID de sector (ej: "A11" → "A", "D3" → "D").
+ * @param {string} idSector
+ * @returns {string}
+ */
+function obtenerZona(idSector) {
+    return idSector.charAt(0).toUpperCase();
+}
+
+/**
+ * Genera el array mock de asientos para un sector del SVG (ej: "A11", "D3").
+ * Si no se pasa idSector, retorna un array vacío (los asientos se generan
+ * bajo demanda, sector por sector, al navegar a asientos.html).
+ * @param {string} idSector  — ID del sector tal como está en el SVG (ej: "A11")
  * @returns {Asiento[]}
  */
 export function generarAsientosMock(idSector) {
-    const sectoresAGenerar = idSector
-        ? SECTORES.filter((s) => s.idSector === idSector)
-        : SECTORES;
+    if (!idSector) return [];
+
+    const zona = obtenerZona(idSector);
+    const config = CONFIG_ZONA[zona] ?? { filas: 8, asientosPorFila: 6 };
+    const precio = PRECIOS_POR_ZONA[zona] ?? 270000;
 
     const nuevosAsientos = [];
 
-    sectoresAGenerar.forEach((sector) => {
-        for (let f = 0; f < sector.filas; f++) {
-            const letraFila = String.fromCharCode(65 + f); // A, B, C...
-            for (let n = 1; n <= sector.asientosPorFila; n++) {
-                // Un ~12% de los asientos arrancan "ocupados" para simular
-                // ventas previas reales que vendrían del backend.
-                const yaOcupado = Math.random() < 0.12;
+    for (let f = 0; f < config.filas; f++) {
+        const numeroFila = String(f + 1); // Filas numeradas: 1, 2, 3...
+        for (let n = 1; n <= config.asientosPorFila; n++) {
+            // Un ~12% de los asientos arrancan "ocupados" para simular ventas previas.
+            const yaOcupado = Math.random() < 0.12;
 
-                nuevosAsientos.push({
-                    idAsiento: `${sector.nombre.slice(0, 1).toUpperCase()}-${letraFila}-${n}`,
-                    idSector: sector.idSector,
-                    sector: sector.nombre,
-                    fila: letraFila,
-                    numero: n,
-                    precio: sector.precio,
-                    estado: yaOcupado ? "ocupado" : "disponible",
-                });
-            }
+            nuevosAsientos.push({
+                idAsiento: `${idSector}-${numeroFila}-${n}`,
+                idSector: idSector,
+                sector: idSector,
+                fila: numeroFila,
+                numero: n,
+                precio: precio,
+                estado: yaOcupado ? "ocupado" : "disponible",
+            });
         }
-    });
+    }
 
     return nuevosAsientos;
 }
 
 /**
- * Inicializa (o reinicializa) el array en memoria `_asientos`.
- * Útil para tests o para cuando llegue la data real del backend:
- *   inicializarAsientos(await fetchAsientosDesdeAPI());
- * @param {Asiento[]} [asientosIniciales] - si no se pasa, genera el mock completo.
+ * Inicializa (o reinicializa) el array en memoria `_asientos` para
+ * un sector específico. Útil para cuando llega la data real del backend:
+ *   inicializarAsientos(await fetchAsientosDesdeAPI(idSector));
+ * @param {Asiento[]} [asientosIniciales] - si no se pasa, genera el mock.
+ * @param {string} [idSector] - necesario para generar el mock correcto.
  */
-export function inicializarAsientos(asientosIniciales) {
-    _asientos = asientosIniciales ?? generarAsientosMock();
+export function inicializarAsientos(asientosIniciales, idSector) {
+    _asientos = asientosIniciales ?? generarAsientosMock(idSector);
 
-    // Al iniciar, sincronizamos contra lo que ya estaba seleccionado por
-    // otras pestañas/sesiones (ej: si recargamos la página).
+    // Al iniciar, sincronizamos contra lo que ya estaba seleccionado
+    // en otras pestañas/sesiones (ej: si recargamos la página).
     const seleccionPrevia = obtenerSeleccionGuardada();
     _asientos.forEach((asiento) => {
         if (seleccionPrevia.includes(asiento.idAsiento) && asiento.estado !== "ocupado") {
@@ -136,109 +158,21 @@ function filtrarPorSector(idSector) {
     return _asientos.filter((a) => a.idSector === idSector);
 }
 
-/** @returns {Asiento[]} solo los disponibles de un sector */
-function filtrarDisponiblesPorSector(idSector) {
-    return _asientos.filter((a) => a.idSector === idSector && a.estado === "disponible");
-}
-
 /** @returns {Asiento[]} todos los asientos en estado "seleccionado" (global) */
 export function obtenerAsientosSeleccionados() {
     return _asientos.filter((a) => a.estado === "seleccionado");
 }
 
-/** @returns {{ idSector:number, nombre:string, disponibles:number, total:number, precio:number }[]} */
-function calcularResumenPorSector() {
-    return SECTORES.map((sector) => {
-        const asientosDelSector = filtrarPorSector(sector.idSector);
-        const disponibles = asientosDelSector.filter((a) => a.estado === "disponible").length;
-        return {
-            idSector: sector.idSector,
-            nombre: sector.nombre,
-            disponibles,
-            total: asientosDelSector.length,
-            precio: sector.precio,
-        };
-    });
-}
-
 /* ============================================================================
- * 3. RENDER DINÁMICO — Pantalla "Secciones disponibles"
- * ==========================================================================*/
-
-/**
- * Pinta el mapa general de sectores (Norte, Sur, Platea, Palco) dentro del
- * contenedor indicado. Cada sector es clickeable y dispara onSeleccionarSector.
- * @param {HTMLElement} contenedor
- * @param {(idSector: number) => void} [onSeleccionarSector]
- */
-export function renderizarMapaSectores(contenedor, onSeleccionarSector) {
-    if (!contenedor) return;
-
-    // Limpiamos el contenedor de forma controlada (no innerHTML = "").
-    while (contenedor.firstChild) {
-        contenedor.removeChild(contenedor.firstChild);
-    }
-
-    const resumen = calcularResumenPorSector();
-
-    const fila = document.createElement("div");
-    fila.classList.add("row", "g-3", "mapa-sectores");
-
-    resumen.forEach((sector) => {
-        const columna = document.createElement("div");
-        columna.classList.add("col-6", "col-md-3");
-
-        const tarjeta = document.createElement("div");
-        tarjeta.classList.add("card", "h-100", "sector-card", "text-center", "p-3");
-        tarjeta.dataset.idSector = String(sector.idSector);
-        tarjeta.dataset.estado = sector.disponibles === 0 ? "agotado" : "disponible";
-
-        if (sector.disponibles === 0) {
-            tarjeta.classList.add("sector-agotado");
-        } else {
-            tarjeta.style.cursor = "pointer";
-            tarjeta.addEventListener("click", () => {
-                if (typeof onSeleccionarSector === "function") {
-                    onSeleccionarSector(sector.idSector);
-                }
-            });
-        }
-
-        const titulo = document.createElement("h5");
-        titulo.classList.add("card-title");
-        titulo.textContent = sector.nombre;
-
-        const disponibilidad = document.createElement("p");
-        disponibilidad.classList.add("card-text", "mb-1");
-        disponibilidad.textContent =
-            sector.disponibles === 0
-                ? "Agotado"
-                : `${sector.disponibles} de ${sector.total} disponibles`;
-
-        const precio = document.createElement("p");
-        precio.classList.add("card-text", "fw-bold");
-        precio.textContent = `$${sector.precio.toLocaleString("es-AR")}`;
-
-        tarjeta.appendChild(titulo);
-        tarjeta.appendChild(disponibilidad);
-        tarjeta.appendChild(precio);
-        columna.appendChild(tarjeta);
-        fila.appendChild(columna);
-    });
-
-    contenedor.appendChild(fila);
-}
-
-/* ============================================================================
- * 4. RENDER DINÁMICO — Pantallas "Ver sección" / "Seleccionar asientos"
+ * 3. RENDER DINÁMICO — Pantalla "Ver sección" / "Seleccionar asientos"
  * ==========================================================================*/
 
 /**
  * Pinta la grilla de asientos de UN sector dentro del contenedor.
- * Cada asiento es un <button> o <div> con dataset.idAsiento y dataset.estado,
+ * Cada asiento es un <button> con dataset.idAsiento y dataset.estado,
  * clickeable para alternar entre "disponible" <-> "seleccionado".
  * @param {HTMLElement} contenedor
- * @param {number} idSector
+ * @param {string} idSector   — ID del sector SVG (ej: "A11")
  * @param {object} [opciones]
  * @param {() => void} [opciones.onCambioSeleccion] - callback tras cada click válido
  */
@@ -246,6 +180,7 @@ export function renderizarListaAsientos(contenedor, idSector, opciones = {}) {
     if (!contenedor) return;
     const { onCambioSeleccion } = opciones;
 
+    // Limpiamos el contenedor de forma controlada (sin innerHTML = "")
     while (contenedor.firstChild) {
         contenedor.removeChild(contenedor.firstChild);
     }
@@ -260,24 +195,25 @@ export function renderizarListaAsientos(contenedor, idSector, opciones = {}) {
         return;
     }
 
-    // Agrupamos por fila para pintar una grilla prolija (array en JS, no DOM).
-    const filas = [...new Set(asientosDelSector.map((a) => a.fila))];
+    // Agrupamos por fila para pintar la grilla (operación sobre el array, no el DOM)
+    const filas = [...new Set(asientosDelSector.map((a) => a.fila))].sort((a, b) => Number(a) - Number(b));
 
     const grilla = document.createElement("div");
     grilla.classList.add("grilla-asientos");
     grilla.dataset.idSector = String(idSector);
 
-    filas.forEach((letraFila) => {
+    filas.forEach((numeroFila) => {
         const filaWrapper = document.createElement("div");
-        filaWrapper.classList.add("fila-asientos", "d-flex", "align-items-center", "gap-2", "mb-2");
+        filaWrapper.classList.add("fila-asientos");
 
+        // Etiqueta de fila a la izquierda (ej: "1", "2", ...)
         const etiquetaFila = document.createElement("span");
-        etiquetaFila.classList.add("etiqueta-fila", "fw-bold", "me-2");
-        etiquetaFila.textContent = letraFila;
+        etiquetaFila.classList.add("etiqueta-fila");
+        etiquetaFila.textContent = numeroFila;
         filaWrapper.appendChild(etiquetaFila);
 
         const asientosDeFila = asientosDelSector
-            .filter((a) => a.fila === letraFila)
+            .filter((a) => a.fila === numeroFila)
             .sort((a, b) => a.numero - b.numero);
 
         asientosDeFila.forEach((asiento) => {
@@ -301,12 +237,14 @@ export function renderizarListaAsientos(contenedor, idSector, opciones = {}) {
 function crearBotonAsiento(asiento, onCambioSeleccion) {
     const boton = document.createElement("button");
     boton.type = "button";
-    boton.classList.add("btn", "btn-asiento");
+    boton.classList.add("btn-asiento");
     boton.dataset.idAsiento = asiento.idAsiento;
     boton.dataset.idSector = String(asiento.idSector);
     boton.dataset.estado = asiento.estado;
-    boton.textContent = String(asiento.numero);
-    boton.setAttribute("aria-label", `Asiento ${asiento.fila}${asiento.numero} - ${asiento.sector}`);
+    boton.setAttribute(
+        "aria-label",
+        `Asiento ${asiento.numero}, Fila ${asiento.fila} — Sector ${asiento.sector}`
+    );
 
     aplicarEstiloSegunEstado(boton, asiento.estado);
 
@@ -315,7 +253,7 @@ function crearBotonAsiento(asiento, onCambioSeleccion) {
     } else {
         boton.addEventListener("click", () => {
             alternarSeleccionAsiento(asiento.idAsiento);
-            // Reflejamos el nuevo estado en el botón sin re-renderizar toda la grilla.
+            // Actualizamos solo el botón tocado, sin re-renderizar toda la grilla
             const actualizado = _asientos.find((a) => a.idAsiento === asiento.idAsiento);
             if (actualizado) {
                 boton.dataset.estado = actualizado.estado;
@@ -330,7 +268,7 @@ function crearBotonAsiento(asiento, onCambioSeleccion) {
     return boton;
 }
 
-/** Aplica clases visuales según el estado (CSS real va en styles.css). */
+/** Aplica/quita clases visuales según el estado del asiento (estilos en asientos.html <style>). */
 function aplicarEstiloSegunEstado(boton, estado) {
     boton.classList.remove("btn-disponible", "btn-seleccionado", "btn-ocupado");
     if (estado === "disponible") boton.classList.add("btn-disponible");
@@ -339,13 +277,13 @@ function aplicarEstiloSegunEstado(boton, estado) {
 }
 
 /* ============================================================================
- * 5. LÓGICA DE SELECCIÓN
+ * 4. LÓGICA DE SELECCIÓN
  * ==========================================================================*/
 
 /**
  * Alterna el estado de un asiento entre "disponible" y "seleccionado",
  * actualiza el array en memoria Y persiste el cambio en storage.js
- * (lo cual es lo que dispara el evento 'storage' en otras pestañas).
+ * (lo cual dispara el evento 'storage' en otras pestañas).
  * No hace nada si el asiento está "ocupado".
  * @param {string} idAsiento
  */
@@ -363,125 +301,152 @@ export function alternarSeleccionAsiento(idAsiento) {
 }
 
 /* ============================================================================
- * 6. RENDER DINÁMICO — Pantalla "Mostrar asientos seleccionados" (Resumen)
+ * 5. RENDER DINÁMICO — Pantalla "Resumen de selección"
  * ==========================================================================*/
 
 /**
- * Pinta el resumen de selección actual: lista de asientos elegidos + total.
+ * Pinta el resumen de selección actual: tabla de asientos elegidos + total.
  * Pensado para ser llamado de nuevo cada vez que cambia la selección
  * (después de cada click, o al recibir un evento 'storage').
- * @param {HTMLElement} contenedor
+ *
+ * @param {HTMLElement} contenedor  — el tbody de la tabla de detalle
+ * @param {HTMLElement} totalEl     — elemento donde mostrar el total
+ * @param {HTMLElement} btnContinuar — botón que se habilita/deshabilita
  * @param {object} [opciones]
- * @param {(idAsiento: string) => void} [opciones.onQuitarAsiento] - callback al quitar desde el resumen
+ * @param {(idAsiento: string) => void} [opciones.onQuitarAsiento]
  */
-export function renderizarResumenSeleccion(contenedor, opciones = {}) {
+export function renderizarResumenSeleccion(contenedor, totalEl, btnContinuar, opciones = {}) {
     if (!contenedor) return;
     const { onQuitarAsiento } = opciones;
 
+    // Limpiamos filas previas
     while (contenedor.firstChild) {
         contenedor.removeChild(contenedor.firstChild);
     }
 
     const seleccionados = obtenerAsientosSeleccionados();
 
-    const titulo = document.createElement("h5");
-    titulo.textContent = "Asientos seleccionados";
-    contenedor.appendChild(titulo);
-
-    if (seleccionados.length === 0) {
-        const vacio = document.createElement("p");
-        vacio.classList.add("text-muted");
-        vacio.textContent = "Todavía no seleccionaste ningún asiento.";
-        contenedor.appendChild(vacio);
-        return;
+    // Habilitamos/deshabilitamos el botón Continuar según si hay selección
+    if (btnContinuar) {
+        btnContinuar.disabled = seleccionados.length === 0;
     }
 
-    const lista = document.createElement("ul");
-    lista.classList.add("list-group", "mb-3");
+    if (seleccionados.length === 0) {
+        // Fila vacía para indicar que no hay selección
+        const trVacio = document.createElement("tr");
+        const tdVacio = document.createElement("td");
+        tdVacio.colSpan = 5;
+        tdVacio.classList.add("text-center", "text-muted", "py-3");
+        tdVacio.textContent = "Ningún asiento seleccionado.";
+        trVacio.appendChild(tdVacio);
+        contenedor.appendChild(trVacio);
+
+        if (totalEl) totalEl.textContent = "$0";
+        return;
+    }
 
     let total = 0;
 
     seleccionados.forEach((asiento) => {
         total += asiento.precio;
 
-        const item = document.createElement("li");
-        item.classList.add(
-            "list-group-item",
-            "d-flex",
-            "justify-content-between",
-            "align-items-center"
-        );
-        item.dataset.idAsiento = asiento.idAsiento;
+        // Fila de tabla: Asiento | Fila | Cantidad | Precio | Quitar
+        const tr = document.createElement("tr");
+        tr.dataset.idAsiento = asiento.idAsiento;
+        tr.classList.add("ta-detalle-fila");
 
-        const texto = document.createElement("span");
-        texto.textContent = `${asiento.sector} - Fila ${asiento.fila}, Asiento ${asiento.numero} ($${asiento.precio.toLocaleString("es-AR")})`;
+        // Celda: número de asiento
+        const tdAsiento = document.createElement("td");
+        tdAsiento.classList.add("tr-asiento");
+        tdAsiento.textContent = String(asiento.numero);
+        tr.appendChild(tdAsiento);
 
-        item.appendChild(texto);
+        // Celda: fila (letra)
+        const tdFila = document.createElement("td");
+        tdFila.classList.add("tr-fila");
+        tdFila.textContent = asiento.fila;
+        tr.appendChild(tdFila);
 
+        // Celda: cantidad (siempre 1 porque cada asiento es una entrada)
+        const tdCantidad = document.createElement("td");
+        tdCantidad.classList.add("tr-qty");
+        tdCantidad.textContent = "1";
+        tr.appendChild(tdCantidad);
+
+        // Celda: precio formateado en AR$
+        const tdPrecio = document.createElement("td");
+        tdPrecio.classList.add("tr-price");
+        tdPrecio.textContent = `$${asiento.precio.toLocaleString("es-AR")}`;
+        tr.appendChild(tdPrecio);
+
+        // Celda: botón carrito para quitar el asiento
+        const tdCart = document.createElement("td");
+        tdCart.classList.add("tr-cart");
         if (typeof onQuitarAsiento === "function") {
             const botonQuitar = document.createElement("button");
             botonQuitar.type = "button";
-            botonQuitar.classList.add("btn", "btn-sm", "btn-outline-danger");
-            botonQuitar.textContent = "Quitar";
+            botonQuitar.classList.add("ta-cart-btn");
+            botonQuitar.setAttribute("aria-label", `Quitar asiento ${asiento.numero}`);
+
+            const icono = document.createElement("i");
+            icono.classList.add("bi", "bi-cart-fill");
+            icono.style.color = "#ed194d";
+            botonQuitar.appendChild(icono);
+
             botonQuitar.addEventListener("click", () => {
                 alternarSeleccionAsiento(asiento.idAsiento);
                 onQuitarAsiento(asiento.idAsiento);
             });
-            item.appendChild(botonQuitar);
+            tdCart.appendChild(botonQuitar);
         }
+        tr.appendChild(tdCart);
 
-        lista.appendChild(item);
+        contenedor.appendChild(tr);
     });
 
-    contenedor.appendChild(lista);
-
-    const totalElemento = document.createElement("p");
-    totalElemento.classList.add("fw-bold", "fs-5");
-    totalElemento.textContent = `Total: $${total.toLocaleString("es-AR")}`;
-    contenedor.appendChild(totalElemento);
+    // Actualizamos el total
+    if (totalEl) {
+        totalEl.textContent = `$${total.toLocaleString("es-AR")}`;
+    }
 }
 
 /* ============================================================================
- * 7. SINCRONIZACIÓN ENTRE PESTAÑAS (regla de oro #2)
+ * 6. SINCRONIZACIÓN ENTRE PESTAÑAS (regla de oro #2)
  * ==========================================================================*/
 
 /**
- * Activa el listener del evento 'storage'. Debe llamarse UNA sola vez,
- * típicamente desde main.js al iniciar la app.
+ * Activa el listener del evento 'storage'. Debe llamarse UNA sola vez
+ * al iniciar la página de asientos.
  *
- * Importante: el evento 'storage' SOLO se dispara en pestañas distintas
- * a la que hizo el cambio (es una limitación nativa del navegador, no un
- * bug). Por eso este listener sirve para enterarse de selecciones hechas
- * por OTROS usuarios/pestañas, mientras que los cambios propios ya se
- * reflejan de forma directa en alternarSeleccionAsiento().
+ * El evento 'storage' SOLO se dispara en pestañas distintas a la que
+ * hizo el cambio (limitación nativa del navegador). Por eso sirve para
+ * enterarse de selecciones hechas por OTROS, mientras que los cambios
+ * propios se reflejan directamente en alternarSeleccionAsiento().
  *
  * @param {object} [opciones]
- * @param {() => void} [opciones.onSincronizar] - callback para que quien llamó
- *   pueda re-renderizar la pantalla que tenga activa (mapa, lista o resumen).
+ * @param {() => void} [opciones.onSincronizar] - callback para re-renderizar
  */
 export function inicializarSincronizacion(opciones = {}) {
     const { onSincronizar } = opciones;
 
     window.addEventListener("storage", (evento) => {
-        // Filtramos: solo nos interesa la clave de selección de asientos.
+        // Solo nos interesa la clave de selección de asientos
         if (evento.key !== CLAVE_SELECCION_ASIENTOS) return;
 
         const seleccionActualizada = evento.newValue ? JSON.parse(evento.newValue) : [];
 
-        // Reconciliamos el array en memoria con lo que llegó de otra pestaña.
+        // Reconciliamos el array en memoria con lo que llegó de otra pestaña
         _asientos.forEach((asiento) => {
             const estaSeleccionadoAhora = seleccionActualizada.includes(asiento.idAsiento);
 
             if (estaSeleccionadoAhora && asiento.estado === "disponible") {
-                // Otra pestaña lo tomó: para esta pestaña pasa a verse como ocupado
-                // (bloqueo inmediato), no como "seleccionado" (que implica que YO lo elegí).
+                // Otra pestaña lo tomó: lo mostramos como ocupado (bloqueo inmediato)
                 asiento.estado = "ocupado";
             } else if (!estaSeleccionadoAhora && asiento.estado === "seleccionado") {
-                // Otra pestaña liberó un asiento que en este array figuraba seleccionado
-                // (caso borde: multi-pestaña del mismo usuario). Lo liberamos.
+                // Otra pestaña liberó un asiento que aquí figuraba seleccionado
                 asiento.estado = "disponible";
             } else if (!estaSeleccionadoAhora && asiento.estado === "ocupado") {
-                // Se liberó un asiento que estaba bloqueado por otra pestaña.
+                // Se liberó un asiento bloqueado por otra pestaña
                 asiento.estado = "disponible";
             }
         });
@@ -493,10 +458,10 @@ export function inicializarSincronizacion(opciones = {}) {
 }
 
 /* ============================================================================
- * 8. UTILIDAD INTERNA (uso en main.js si se necesita debug)
+ * 7. UTILIDAD (para debug/testing desde consola)
  * ==========================================================================*/
 
-/** @returns {Asiento[]} copia de seguridad del array completo, para debug/testing */
+/** @returns {Asiento[]} copia del array completo, para debug */
 export function obtenerTodosLosAsientos() {
     return [..._asientos];
 }

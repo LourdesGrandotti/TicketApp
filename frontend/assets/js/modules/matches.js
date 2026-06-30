@@ -367,7 +367,20 @@ const renderRows = sid => {
   });
 
   const btn = document.getElementById('btn-continuar');
-  if (btn) btn.disabled = false;
+  if (btn) {
+    btn.disabled = false;
+    // Navegamos a asientos.html pasando el sector elegido y el partido actual.
+    // Usamos onclick en lugar de addEventListener para reemplazar el handler
+    // cada vez que se selecciona un sector distinto (evita listeners duplicados).
+    btn.onclick = () => {
+      const params = new URLSearchParams(location.search);
+      const idPartido = params.get('partido') || '';
+      const url = idPartido
+        ? `asientos.html?sector=${sid}&partido=${idPartido}`
+        : `asientos.html?sector=${sid}`;
+      location.href = url;
+    };
+  }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
