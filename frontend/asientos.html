@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TicketApp – Elegí tus asientos en el sector seleccionado.">
+  <title>TicketApp | Selección de Asientos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <!-- Boxicons CDN -->
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.cdnfonts.com/css/nulshock" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+
+  <!-- Sección del Navbar -->
+  <header class="d-flex flex-wrap justify-content-between align-items-center px-4 py-3 border-bottom shadow-sm">
+    <div class="d-flex align-items-center gap-3 col-12 col-md-6 mb-3 mb-md-0">
+      <!-- Logo -->
+      <a href="home.html">
+        <img src="assets/img/LogoTicketApp.png" alt="Logo TicketApp" class="img-fluid object-fit-contain" width="140" height="40">
+      </a>
+
+      <!-- Buscador -->
+      <div class="input-group flex-nowrap w-75" id="nav-search">
+        <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted px-3"><i class='bx bx-search'></i></span>
+        <input type="text" class="form-control border-start-0 rounded-end-pill shadow-none" placeholder="Buscar partidos o países">
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-end gap-3 col-12 col-md-6">
+      <a href="perfil.html" id="nav-account" class="text-decoration-none text-dark small fw-medium text-nowrap">Ver mi cuenta</a>
+
+      <a href="carrito.html" id="nav-cart" class="text-decoration-none position-relative me-2" style="color: #ed194d;">
+        <i class='bx bx-cart fs-4'></i>
+        <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill border border-dark bg-light text-dark p-1 d-none"></span>
+      </a>
+
+      <span id="nav-divider" class="text-secondary">|</span>
+
+      <a href="login.html" onclick="localStorage.removeItem('userToken'); localStorage.removeItem('isLoggedIn');" id="nav-auth-btn" class="btn btn-brand rounded-pill fw-bold text-nowrap px-4 py-2">Cerrar sesión</a>
+    </div>
+  </header>
+
+  <!-- Banner con información del partido (se rellena con JS desde matches.js) -->
+  <div class="ta-match-bar" id="match-bar" aria-label="Información del partido"></div>
+
+  <!-- Encabezado: botón Volver + título del sector -->
+  <div class="ta-sec-header flex-wrap align-items-center">
+    <a href="#" id="btn-volver" class="ta-btn-volver" aria-label="Volver al mapa del estadio">
+      <i class="bi bi-chevron-left"></i> Volver
+    </a>
+    <div class="d-flex flex-column align-items-start m-0">
+      <span class="ta-sector-titulo" id="sector-titulo">SECTOR —</span>
+      <p class="text-secondary fw-semibold fs-6 mb-0 mt-1" id="limite-label">Seleccioná asientos</p>
+    </div>
+  </div>
+
+  <!-- Sección principal -->
+  <main class="ta-main" aria-label="Selección de asientos">
+
+    <!-- Columna izquierda: grilla de asientos -->
+    <section class="ta-seats-col" aria-label="Mapa de asientos del sector">
+
+      <!-- Alerta visual de límite excedido -->
+      <div id="alerta-limite" class="alert alert-danger d-none py-2 px-3 fw-semibold text-center mb-3" role="alert"></div>
+
+      <!-- Contenedor donde seating.js pinta la grilla dinámica -->
+      <div id="contenedor-grilla" role="group" aria-label="Grilla de asientos"></div>
+
+      <!-- Leyenda de estados -->
+      <div class="ta-legend" role="list" aria-label="Leyenda de estados de asientos">
+        <div class="ta-legend-item" role="listitem">
+          <span class="ta-leg-box" style="background-color:#e8e8e8; border:1px solid #d0d0d0;"></span>
+          No disponible
+        </div>
+        <div class="ta-legend-item" role="listitem">
+          <span class="ta-leg-box" style="background-color:#c8c8c8; border:1px solid #b3b3b3;"></span>
+          Disponible
+        </div>
+        <div class="ta-legend-item" role="listitem">
+          <span class="ta-leg-box" style="background-color:var(--primary);"></span>
+          Tickets seleccionados
+        </div>
+      </div>
+    </section>
+
+    <!-- Columna derecha: tabla de detalle + botón continuar -->
+    <aside class="ta-panel-col" aria-label="Detalle de selección">
+
+      <!-- Encabezado de columnas de la tabla -->
+      <div class="ta-table-hdr" role="row">
+        <div class="tr-asiento">Asiento</div>
+        <div class="tr-fila">Fil</div>
+        <div class="tr-qty">Cantidad</div>
+        <div class="tr-price">Precio</div>
+        <div class="tr-cart"></div>
+      </div>
+
+      <!--
+        Cuerpo de la tabla: seating.js · renderizarResumenSeleccion()
+        rellena este div con filas de clase .ta-detalle-fila.
+        Usamos un div en lugar de un <table>/<tbody> para mantener
+        la mismísima estética flex de estadio.html.
+      -->
+      <div id="tabla-detalle-body" role="list" aria-label="Asientos seleccionados"></div>
+
+      <!-- Total -->
+      <div class="ta-total-line">
+        Total: <span id="precio-total">$0</span>
+      </div>
+
+      <!-- Botón continuar (deshabilitado hasta que haya al menos 1 seleccionado) -->
+      <div class="ta-continuar-wrap">
+        <button
+          class="ta-btn-continuar"
+          id="btn-continuar"
+          type="button"
+          disabled
+          aria-label="Continuar con la compra"
+        >Continuar</button>
+      </div>
+
+    </aside>
+  </main>
+
+  <!-- Footer -->
+  <footer class="ta-footer" role="contentinfo">
+    <img src="assets/img/logoticketappblanco.png" alt="TicketApp" class="ta-footer-logo" style="width: 120px; object-fit: contain;">
+    <div class="ta-footer-copy text-white mx-auto text-center small">
+      &copy; 2026 Todos los derechos reservados.
+    </div>
+    <div style="width: 120px;" class="d-none d-md-block"></div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!--
+    Script de inicialización de asientos.html.
+    Usa type="module" para poder importar seating.js y matches.js con ES6 import/export.
+    Todo el DOM de asientos se arma aquí mismo, siguiendo el mismo patrón
+    que main.js de referencia provisto por la cátedra.
+  -->
+  <script type="module">
+    /* ------------------------------------------------------------------
+       Importamos funciones del módulo de asientos (Persona 4)
+    ------------------------------------------------------------------ */
+    import {
+      generarAsientosMock,
+      inicializarAsientos,
+      renderizarListaAsientos,
+      renderizarResumenSeleccion,
+      inicializarSincronizacion,
+      establecerLimiteAsientos,
+    } from './assets/js/modules/seating.js';
+
+    import { guardarSeleccion } from './assets/js/storage.js';
+
+    /* ------------------------------------------------------------------
+       1. Leemos los parámetros de la URL
+          - sector = ID del sector SVG elegido en estadio.html (ej: "A11")
+          - partido = ID del partido (para reutilizar el banner del match)
+          - cant = cantidad de entradas elegida en estadio.html
+    ------------------------------------------------------------------ */
+    const params     = new URLSearchParams(location.search);
+    const idSector   = params.get('sector') || 'A1';   // por defecto A1
+    const idPartido  = params.get('partido') || '';
+    const cantURL    = parseInt(params.get('cant'), 10) || 1;
+
+    // Límite máximo absoluto es 4 asientos
+    const cantLimite = Math.max(1, Math.min(cantURL, 4));
+
+    // Inicializamos el límite en el módulo seating.js
+    establecerLimiteAsientos(cantLimite);
+
+    /* ------------------------------------------------------------------
+       2. Título dinámico del sector y el label del límite activo
+    ------------------------------------------------------------------ */
+    const tituloEl = document.getElementById('sector-titulo');
+    if (tituloEl) tituloEl.textContent = `SECTOR ${idSector}`;
+
+    const limiteLabel = document.getElementById('limite-label');
+    if (limiteLabel) {
+      limiteLabel.textContent = `Seleccioná hasta ${cantLimite} ${cantLimite === 1 ? 'asiento' : 'asientos'}`;
+    }
+
+    /* ------------------------------------------------------------------
+       3. Botón "Volver" → limpia selecciones y regresa a estadio.html
+          Se limpian porque al volver el usuario puede cambiar el límite
+          de asientos; mantener selecciones previas causaría inconsistencias.
+    ------------------------------------------------------------------ */
+    const btnVolver = document.getElementById('btn-volver');
+    if (btnVolver) {
+      const urlVolver = idPartido
+        ? `estadio.html?partido=${idPartido}`
+        : 'estadio.html';
+
+      // Prevenimos la navegación por defecto para limpiar primero
+      btnVolver.addEventListener('click', (e) => {
+        e.preventDefault();
+        guardarSeleccion([]);       // borra todas las selecciones del sector
+        location.href = urlVolver;
+      });
+    }
+
+    /* ------------------------------------------------------------------
+       4. Alerta visual de límite excedido
+       Muestra por 4 segundos la advertencia de que ya se seleccionaron todos los asientos correspondientes.
+    ------------------------------------------------------------------ */
+    const alertaLimite = document.getElementById('alerta-limite');
+    let alertaTimeout  = null;
+
+    function mostrarAlertaLimite(limite) {
+      if (alertaLimite) {
+        alertaLimite.textContent = `Límite alcanzado: podés seleccionar hasta ${limite} ${limite === 1 ? 'asiento' : 'asientos'} para este sector.`;
+        alertaLimite.classList.remove('d-none');
+        if (alertaTimeout) clearTimeout(alertaTimeout);
+        alertaTimeout = setTimeout(() => {
+          alertaLimite.classList.add('d-none');
+        }, 4000);
+      }
+    }
+
+    /* ------------------------------------------------------------------
+       5. Inicializamos los asientos del sector en memoria
+    ------------------------------------------------------------------ */
+    inicializarAsientos(null, idSector);
+
+    /* ------------------------------------------------------------------
+       6. Referencias a los elementos del DOM
+    ------------------------------------------------------------------ */
+    const contenedorGrilla  = document.getElementById('contenedor-grilla');
+    const tablaDetalleCuerpo = document.getElementById('tabla-detalle-body');
+    const totalEl            = document.getElementById('precio-total');
+    const btnContinuar       = document.getElementById('btn-continuar');
+
+    /* ------------------------------------------------------------------
+       7. Función que actualiza el resumen de selección (tabla derecha).
+          Se llama cada vez que el usuario hace click en un asiento,
+          o cuando llega un evento 'storage' de otra pestaña.
+    ------------------------------------------------------------------ */
+    function actualizarResumen() {
+      renderizarResumenSeleccion(tablaDetalleCuerpo, totalEl, btnContinuar, {
+        onQuitarAsiento: () => {
+          // Al quitar un asiento desde la tabla, re-pantallamos la grilla
+          // completa para reflejar el cambio en el botón correspondiente.
+          renderizarListaAsientos(contenedorGrilla, idSector, {
+            onCambioSeleccion: actualizarResumen,
+            onLimiteExcedido: mostrarAlertaLimite,
+          });
+          actualizarResumen();
+        },
+      });
+    }
+
+    /* ------------------------------------------------------------------
+       8. Pintamos la grilla de asientos por primera vez
+    ------------------------------------------------------------------ */
+    renderizarListaAsientos(contenedorGrilla, idSector, {
+      onCambioSeleccion: actualizarResumen,
+      onLimiteExcedido: mostrarAlertaLimite,
+    });
+
+    /* ------------------------------------------------------------------
+       9. Pintamos el resumen inicial (vacío, con botón deshabilitado)
+    ------------------------------------------------------------------ */
+    actualizarResumen();
+
+    /* ------------------------------------------------------------------
+       10. Activamos la sincronización entre pestañas
+    ------------------------------------------------------------------ */
+    inicializarSincronizacion({
+      onSincronizar: () => {
+        // Cuando otra pestaña cambia la selección, re-renderizamos todo
+        renderizarListaAsientos(contenedorGrilla, idSector, {
+          onCambioSeleccion: actualizarResumen,
+          onLimiteExcedido: mostrarAlertaLimite,
+        });
+        actualizarResumen();
+      },
+    });
+
+    /* ------------------------------------------------------------------
+       11. Botón "Continuar" → navega al carrito de compras, llevando el
+           ID del partido para que el resumen muestre los datos correctos.
+           La selección de asientos ya quedó persistida en localStorage
+           por storage.js (seating.js la guarda en cada click), así que
+           carrito.html la puede reconstruir apenas cargue.
+    ------------------------------------------------------------------ */
+    if (btnContinuar) {
+      btnContinuar.addEventListener('click', () => {
+        const destino = idPartido
+          ? `carrito.html?partido=${idPartido}`
+          : 'carrito.html';
+        location.href = destino;
+      });
+    }
+  </script>
+
+  <!--
+    matches.js se incluye SIN type="module" para mantener exactamente
+    el mismo patrón que en estadio.html y así el banner del partido
+    se renderice igual que allá (escucha DOMContentLoaded internamente).
+  -->
+  <script src="assets/js/modules/matches.js"></script>
+
+</body>
+
+</html>
