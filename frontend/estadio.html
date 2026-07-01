@@ -104,6 +104,36 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="assets/js/modules/matches.js"></script>
+  <script>
+    // Interceptar la redirección del botón Continuar para inyectar la cantidad de entradas elegida
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('btn-continuar');
+      if (btn) {
+        btn.addEventListener('click', (e) => {
+          // Detener el handler onclick de matches.js
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          
+          const select = document.querySelector('.ta-qty-sel');
+          const cant = select ? select.value : '1';
+          
+          // Buscar el sector que está seleccionado en el DOM
+          const rowItem = document.querySelector('.ta-row-item');
+          const sid = rowItem ? rowItem.dataset.sector : 'A1';
+          
+          // Re-construir la redirección incluyendo el parámetro 'cant'
+          const params = new URLSearchParams(location.search);
+          const idPartido = params.get('partido') || '';
+          
+          const url = idPartido
+            ? `asientos.html?sector=${sid}&partido=${idPartido}&cant=${cant}`
+            : `asientos.html?sector=${sid}&cant=${cant}`;
+          
+          location.href = url;
+        }, true); // Fase de captura para ejecutarse antes de la asignación onclick
+      }
+    });
+  </script>
 </body>
 
 </html>

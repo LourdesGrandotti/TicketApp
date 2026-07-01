@@ -10,488 +10,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.cdnfonts.com/css/nulshock" rel="stylesheet">
-  <style>
-    /* -----------------------------------------------------------------------
-       Variables y reset — idénticos a estadio.html y partidos.html
-    ----------------------------------------------------------------------- */
-    :root {
-      --primary: #ed194d;
-      --dark: #4d4d4d;
-      --light: #fefefe;
-    }
-
-    body {
-      background-color: var(--light);
-      font-family: 'Montserrat', sans-serif;
-      color: var(--dark);
-      margin: 0;
-      padding: 0;
-    }
-
-    /* -----------------------------------------------------------------------
-       Barra de navegación — copiada 1:1 de estadio.html
-    ----------------------------------------------------------------------- */
-    .ta-navbar {
-      background-color: var(--light);
-      border-bottom: 1px solid #eaeaea;
-      padding: 10px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .ta-logo {
-      height: 38px;
-    }
-
-    .ta-nav-links {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-    }
-
-    .ta-nav-link {
-      font-weight: 600;
-      font-size: 12pt;
-      color: var(--dark);
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-
-    .ta-nav-link:hover {
-      color: var(--primary);
-    }
-
-    .ta-btn-ingresar {
-      background-color: var(--primary);
-      color: var(--light);
-      font-weight: 600;
-      font-size: 12pt;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 24px;
-      cursor: pointer;
-    }
-
-    .ta-nav-profile {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background-color: #f0f0f0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    .ta-nav-profile i {
-      font-size: 1.3rem;
-      color: #999;
-    }
-
-    /* -----------------------------------------------------------------------
-       Banner del partido — idéntico a estadio.html
-    ----------------------------------------------------------------------- */
-    .ta-match-bar {
-      background-color: var(--primary);
-      padding: 14px 40px;
-    }
-
-    .ta-bar-inner {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .ta-bar-flags {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .ta-flag-img {
-      width: 44px;
-      height: 28px;
-      object-fit: cover;
-      border-radius: 4px;
-      box-shadow: 0 1px 4px rgba(255, 255, 255, 0.2);
-    }
-
-    .ta-flag-placeholder {
-      width: 44px;
-      height: 28px;
-      background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-    }
-
-    .ta-bar-vs {
-      font-weight: 600;
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 12pt;
-    }
-
-    .ta-bar-sep {
-      width: 1.5px;
-      height: 48px;
-      background-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .ta-bar-info { color: white; }
-    .ta-bar-dt { font-weight: 600; font-size: 13pt; margin-bottom: 2px; }
-    .ta-bar-venue { font-size: 10.5pt; opacity: 0.9; }
-    .ta-bar-city { font-size: 9.5pt; opacity: 0.7; }
-
-    /* -----------------------------------------------------------------------
-       Encabezado de sección: botón volver + título del sector
-    ----------------------------------------------------------------------- */
-    .ta-sec-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 20px 40px 0;
-    }
-
-    .ta-btn-volver {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      border: 1.5px solid var(--dark);
-      background: none;
-      border-radius: 8px;
-      padding: 6px 14px;
-      font-size: 10.5pt;
-      font-weight: 600;
-      color: var(--dark);
-      cursor: pointer;
-      text-decoration: none;
-      transition: border-color 0.2s, color 0.2s;
-    }
-
-    .ta-btn-volver:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    .ta-sector-titulo {
-      font-family: 'Nulshock', 'Montserrat', sans-serif;
-      font-size: 14pt;
-      font-weight: 700;
-      letter-spacing: 2px;
-      color: var(--dark);
-      text-transform: uppercase;
-    }
-
-    /* -----------------------------------------------------------------------
-       Layout principal: columna grilla | columna tabla detalle
-    ----------------------------------------------------------------------- */
-    .ta-main {
-      display: flex;
-      gap: 0;
-      padding: 24px 40px 40px;
-    }
-
-    /* Columna izquierda: mapa de asientos */
-    .ta-seats-col {
-      flex: 1.4;
-      padding-right: 40px;
-      border-right: 1px solid #efefef;
-      min-width: 0;
-    }
-
-    /* Columna derecha: tabla de detalle + botón continuar */
-    .ta-panel-col {
-      flex: 1;
-      padding-left: 40px;
-      min-width: 0;
-    }
-
-    /* -----------------------------------------------------------------------
-       Grilla de asientos (tribuna)
-    ----------------------------------------------------------------------- */
-
-    /* Contenedor principal de la grilla — aspecto de tribuna inclinada */
-    .grilla-asientos {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background-color: #f4f4f4;
-      border-radius: 18px;
-      padding: 28px 32px 28px 20px;
-      /* Perspectiva sutil para darle aspecto de tribuna */
-      transform: perspective(600px) rotateX(6deg);
-      transform-origin: bottom center;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.07);
-    }
-
-    /* Cada fila de la grilla */
-    .fila-asientos {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* Etiqueta de fila (letra A, B, C...) */
-    .etiqueta-fila {
-      font-size: 8pt;
-      font-weight: 700;
-      color: #999;
-      width: 16px;
-      text-align: right;
-      flex-shrink: 0;
-    }
-
-    /* Botón individual de asiento */
-    .btn-asiento {
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
-      border: none;
-      font-size: 8pt;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.1s ease, box-shadow 0.15s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn-asiento:hover:not(:disabled) {
-      transform: scale(1.12);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-    }
-
-    /* Estado: disponible (gris medio) */
-    .btn-disponible {
-      background-color: #c8c8c8;
-      color: #555;
-    }
-
-    /* Estado: seleccionado (primary — rosa/rojo) */
-    .btn-seleccionado {
-      background-color: var(--primary);
-      color: #fff;
-      box-shadow: 0 0 0 2px rgba(237, 25, 77, 0.35);
-    }
-
-    /* Estado: ocupado (gris claro, no clickeable) */
-    .btn-ocupado {
-      background-color: #e8e8e8;
-      color: #ccc;
-      cursor: default;
-    }
-
-    /* -----------------------------------------------------------------------
-       Leyenda debajo del mapa
-    ----------------------------------------------------------------------- */
-    .ta-legend {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-      margin-top: 24px;
-    }
-
-    .ta-legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 10pt;
-      color: var(--dark);
-    }
-
-    .ta-leg-box {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
-    }
-
-    /* -----------------------------------------------------------------------
-       Tabla de detalle de selección — misma estética que estadio.html
-    ----------------------------------------------------------------------- */
-
-    /* Encabezado de columnas */
-    .ta-table-hdr {
-      display: flex;
-      align-items: center;
-      padding: 0 10px 12px;
-      font-weight: 600;
-      font-size: 10.5pt;
-      color: #999;
-      border-bottom: 2px solid #efefef;
-      margin-bottom: 12px;
-    }
-
-    /* Proporciones de columnas */
-    .tr-asiento  { flex: 1.6; }
-    .tr-fila     { flex: 1;   text-align: center; }
-    .tr-qty      { flex: 1.6; text-align: center; }
-    .tr-price    { flex: 2;   text-align: right; font-weight: 600; color: var(--dark); }
-    .tr-cart     { width: 40px; text-align: right; }
-
-    /* Cuerpo de la tabla — renderizado dinámicamente por seating.js */
-    #tabla-detalle-body {
-      display: flex;
-      flex-direction: column;
-      gap: 0; /* las filas del tbody usan los margin de ta-detalle-fila */
-    }
-
-    /* Fila de detalle individual */
-    .ta-detalle-fila {
-      display: flex;
-      align-items: center;
-      border: 2px solid #b3b3b3;
-      border-radius: 12px;
-      padding: 12px 16px;
-      margin-bottom: 10px;
-      font-size: 11pt;
-      transition: border-color 0.2s;
-    }
-
-    .ta-detalle-fila td {
-      /* Reseteamos el padding de td para que tome el del flex-item */
-      padding: 0;
-      border: none;
-    }
-
-    /* Botón carrito dentro de la fila de detalle */
-    .ta-cart-btn {
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-    }
-
-    .ta-cart-btn i {
-      font-size: 1.3rem;
-    }
-
-    /* Línea de total */
-    .ta-total-line {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      gap: 10px;
-      margin-top: 8px;
-      font-weight: 700;
-      font-size: 12pt;
-      color: var(--dark);
-      padding-right: 10px;
-    }
-
-    /* -----------------------------------------------------------------------
-       Botón Continuar
-    ----------------------------------------------------------------------- */
-    .ta-continuar-wrap {
-      margin-top: 16px;
-      padding-top: 10px;
-    }
-
-    .ta-btn-continuar {
-      width: 100%;
-      background-color: var(--primary);
-      color: white;
-      font-weight: 600;
-      font-size: 13pt;
-      border: none;
-      border-radius: 50px;
-      padding: 14px 0;
-      cursor: pointer;
-      transition: opacity 0.2s ease;
-    }
-
-    .ta-btn-continuar:hover:not(:disabled) {
-      opacity: 0.9;
-    }
-
-    .ta-btn-continuar:disabled {
-      background-color: #ccc;
-      cursor: default;
-    }
-
-    /* -----------------------------------------------------------------------
-       Footer — idéntico a estadio.html
-    ----------------------------------------------------------------------- */
-    .ta-footer {
-      background-color: var(--primary);
-      padding: 40px 80px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .ta-footer-logo {
-      height: 38px;
-    }
-
-    .ta-footer-links {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: flex-end;
-    }
-
-    .ta-footer-link {
-      font-weight: 600;
-      font-size: 11pt;
-      color: white;
-      text-decoration: none;
-      transition: opacity 0.2s ease;
-    }
-
-    .ta-footer-link:hover {
-      opacity: 0.8;
-      color: white;
-    }
-
-    /* -----------------------------------------------------------------------
-       Responsive (mismo breakpoint 900px que estadio.html)
-    ----------------------------------------------------------------------- */
-    @media (max-width: 900px) {
-      .ta-main {
-        flex-direction: column;
-        padding: 20px;
-      }
-
-      .ta-seats-col {
-        padding-right: 0;
-        border-right: none;
-        border-bottom: 1px solid #efefef;
-        padding-bottom: 28px;
-        margin-bottom: 28px;
-      }
-
-      .ta-panel-col {
-        padding-left: 0;
-      }
-
-      .ta-sec-header {
-        padding: 16px 20px 0;
-      }
-
-      .ta-footer {
-        padding: 30px 40px;
-        flex-direction: column;
-        gap: 20px;
-        align-items: center;
-      }
-
-      .ta-footer-links {
-        align-items: center;
-      }
-
-      /* En móvil la perspectiva queda más suave */
-      .grilla-asientos {
-        transform: none;
-        padding: 20px 16px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 
 <body>
@@ -516,11 +35,14 @@
   <div class="ta-match-bar" id="match-bar" aria-label="Información del partido"></div>
 
   <!-- Encabezado: botón Volver + título del sector -->
-  <div class="ta-sec-header">
+  <div class="ta-sec-header flex-wrap align-items-center">
     <a href="#" id="btn-volver" class="ta-btn-volver" aria-label="Volver al mapa del estadio">
       <i class="bi bi-chevron-left"></i> Volver
     </a>
-    <span class="ta-sector-titulo" id="sector-titulo">SECTOR —</span>
+    <div class="d-flex flex-column align-items-start m-0">
+      <span class="ta-sector-titulo" id="sector-titulo">SECTOR —</span>
+      <p class="text-secondary fw-semibold fs-6 mb-0 mt-1" id="limite-label">Seleccioná asientos</p>
+    </div>
   </div>
 
   <!-- Sección principal -->
@@ -528,6 +50,9 @@
 
     <!-- Columna izquierda: grilla de asientos -->
     <section class="ta-seats-col" aria-label="Mapa de asientos del sector">
+
+      <!-- Alerta visual de límite excedido -->
+      <div id="alerta-limite" class="alert alert-danger d-none py-2 px-3 fw-semibold text-center mb-3" role="alert"></div>
 
       <!-- Contenedor donde seating.js pinta la grilla dinámica -->
       <div id="contenedor-grilla" role="group" aria-label="Grilla de asientos"></div>
@@ -616,42 +141,75 @@
       renderizarListaAsientos,
       renderizarResumenSeleccion,
       inicializarSincronizacion,
+      establecerLimiteAsientos,
     } from './assets/js/modules/seating.js';
+
+    import { guardarSeleccion } from './assets/js/storage.js';
 
     /* ------------------------------------------------------------------
        1. Leemos los parámetros de la URL
           - sector = ID del sector SVG elegido en estadio.html (ej: "A11")
           - partido = ID del partido (para reutilizar el banner del match)
+          - cant = cantidad de entradas elegida en estadio.html
     ------------------------------------------------------------------ */
     const params     = new URLSearchParams(location.search);
     const idSector   = params.get('sector') || 'A1';   // por defecto A1
     const idPartido  = params.get('partido') || '';
+    const cantURL    = parseInt(params.get('cant'), 10) || 1;
+
+    // Límite máximo absoluto es 4 asientos
+    const cantLimite = Math.max(1, Math.min(cantURL, 4));
+
+    // Inicializamos el límite en el módulo seating.js
+    establecerLimiteAsientos(cantLimite);
 
     /* ------------------------------------------------------------------
-       2. Título dinámico del sector
+       2. Título dinámico del sector y el label del límite activo
     ------------------------------------------------------------------ */
     const tituloEl = document.getElementById('sector-titulo');
     if (tituloEl) tituloEl.textContent = `SECTOR ${idSector}`;
 
+    const limiteLabel = document.getElementById('limite-label');
+    if (limiteLabel) {
+      limiteLabel.textContent = `Seleccioná hasta ${cantLimite} ${cantLimite === 1 ? 'asiento' : 'asientos'}`;
+    }
+
     /* ------------------------------------------------------------------
-       3. Botón "Volver" → regresa a estadio.html conservando el partido
+       3. Botón "Volver" → limpia selecciones y regresa a estadio.html
+          Se limpian porque al volver el usuario puede cambiar el límite
+          de asientos; mantener selecciones previas causaría inconsistencias.
     ------------------------------------------------------------------ */
     const btnVolver = document.getElementById('btn-volver');
     if (btnVolver) {
       const urlVolver = idPartido
         ? `estadio.html?partido=${idPartido}`
         : 'estadio.html';
-      btnVolver.href = urlVolver;
+
+      // Prevenimos la navegación por defecto para limpiar primero
+      btnVolver.addEventListener('click', (e) => {
+        e.preventDefault();
+        guardarSeleccion([]);       // borra todas las selecciones del sector
+        location.href = urlVolver;
+      });
     }
 
     /* ------------------------------------------------------------------
-       4. Banner del partido (reutilizamos la lógica de matches.js).
-          matches.js escucha 'DOMContentLoaded' y detecta si existe
-          el elemento #match-bar para renderizarlo. Como ya está en el
-          DOM al cargar esta página, funciona automáticamente.
-          Solo necesitamos pasar el parámetro 'partido' en la URL, que
-          ya existe porque se lo pasamos desde estadio.html.
+       4. Alerta visual de límite excedido
+       Muestra por 4 segundos la advertencia de que ya se seleccionaron todos los asientos correspondientes.
     ------------------------------------------------------------------ */
+    const alertaLimite = document.getElementById('alerta-limite');
+    let alertaTimeout  = null;
+
+    function mostrarAlertaLimite(limite) {
+      if (alertaLimite) {
+        alertaLimite.textContent = `Límite alcanzado: podés seleccionar hasta ${limite} ${limite === 1 ? 'asiento' : 'asientos'} para este sector.`;
+        alertaLimite.classList.remove('d-none');
+        if (alertaTimeout) clearTimeout(alertaTimeout);
+        alertaTimeout = setTimeout(() => {
+          alertaLimite.classList.add('d-none');
+        }, 4000);
+      }
+    }
 
     /* ------------------------------------------------------------------
        5. Inicializamos los asientos del sector en memoria
@@ -674,10 +232,11 @@
     function actualizarResumen() {
       renderizarResumenSeleccion(tablaDetalleCuerpo, totalEl, btnContinuar, {
         onQuitarAsiento: () => {
-          // Al quitar un asiento desde la tabla, re-pintamos la grilla
+          // Al quitar un asiento desde la tabla, re-pantallamos la grilla
           // completa para reflejar el cambio en el botón correspondiente.
           renderizarListaAsientos(contenedorGrilla, idSector, {
             onCambioSeleccion: actualizarResumen,
+            onLimiteExcedido: mostrarAlertaLimite,
           });
           actualizarResumen();
         },
@@ -689,6 +248,7 @@
     ------------------------------------------------------------------ */
     renderizarListaAsientos(contenedorGrilla, idSector, {
       onCambioSeleccion: actualizarResumen,
+      onLimiteExcedido: mostrarAlertaLimite,
     });
 
     /* ------------------------------------------------------------------
@@ -704,6 +264,7 @@
         // Cuando otra pestaña cambia la selección, re-renderizamos todo
         renderizarListaAsientos(contenedorGrilla, idSector, {
           onCambioSeleccion: actualizarResumen,
+          onLimiteExcedido: mostrarAlertaLimite,
         });
         actualizarResumen();
       },
@@ -715,9 +276,7 @@
     ------------------------------------------------------------------ */
     if (btnContinuar) {
       btnContinuar.addEventListener('click', () => {
-        // TODO (Persona 4 — Fase 2): navegar a carrito.html pasando
-        // los IDs de los asientos seleccionados.
-        // Por ahora confirmamos la selección con una alerta visual.
+        // En la próxima fase se completará el carrito de compras.
         alert('¡Asientos reservados! En la próxima fase se completará el carrito.');
       });
     }

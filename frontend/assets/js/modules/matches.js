@@ -349,6 +349,22 @@ const selectSector = g => {
   renderRows(selSid);
 };
 
+// Calcula cuántos asientos disponibles tiene un sector consultando localStorage.
+// El módulo seating.js guarda en "ticketapp_asientos_seleccionados" los IDs
+// de asientos seleccionados u ocupados (formato: "A11-1-3", "A11-2-5", ...).
+// CONFIG_ZONA define 8 filas × 6 asientos = 48 por sector; tope práctico: 4.
+const calcularDisponibles = sid => {
+  const TOTAL_ASIENTOS_POR_SECTOR = 48; // 8 filas × 6 asientos (CONFIG_ZONA)
+  try {
+    const guardados = JSON.parse(localStorage.getItem('ticketapp_asientos_seleccionados') || '[]');
+    // Filtramos solo los IDs que pertenecen a este sector (comienzan con "sid-")
+    const ocupadosEnSector = guardados.filter(id => id.startsWith(sid + '-')).length;
+    return Math.max(0, TOTAL_ASIENTOS_POR_SECTOR - ocupadosEnSector);
+  } catch {
+    return TOTAL_ASIENTOS_POR_SECTOR;
+  }
+};
+
 // Renderiza detalle del sector
 const renderRows = sid => {
   const container = document.getElementById('rows-container');
@@ -356,19 +372,26 @@ const renderRows = sid => {
 
   const category = getSectorCategory(sid);
   const price = SECTOR_PRICES[category] || 250000;
+  const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1);
+
+  // Cantidad máxima seleccionable: mínimo entre disponibles reales y el tope de 4
+  const disponibles = calcularDisponibles(sid);
+  const maxSeleccionable = Math.min(disponibles, 4);
 
   let optionsHtml = '';
-  for (let v = 1; v <= 4; v++) {
-    optionsHtml += `<option value="${v}">${v}</option>`;
+  if (maxSeleccionable === 0) {
+    optionsHtml = `<option value="0" disabled selected>Sin disponibilidad</option>`;
+  } else {
+    for (let v = 1; v <= maxSeleccionable; v++) {
+      optionsHtml += `<option value="${v}">${v}</option>`;
+    }
   }
-
-  const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1);
 
   container.innerHTML = `
     <div class="ta-row-item sel-row" data-sector="${sid}">
       <div class="tr-sector">${sid} (${formattedCategory})</div>
       <div class="tr-qty">
-        <select class="ta-qty-sel">${optionsHtml}</select>
+        <select class="ta-qty-sel" ${maxSeleccionable === 0 ? 'disabled' : ''}>${optionsHtml}</select>
       </div>
       <div class="tr-price">$${fmt(price)}</div>
       <div class="tr-cart">
@@ -379,10 +402,10 @@ const renderRows = sid => {
     </div>
   `;
 
-  // Activa botón de continuar
+  // Activa botón de continuar (solo si hay disponibilidad)
   const btn = document.getElementById('btn-continuar');
   if (btn) {
-    btn.disabled = false;
+    btn.disabled = maxSeleccionable === 0;
     // Navegamos a asientos.html pasando el sector elegido y el partido actual.
     // Usamos onclick en lugar de addEventListener para reemplazar el handler
     // cada vez que se selecciona un sector distinto (evita listeners duplicados).

@@ -109,9 +109,6 @@ export function generarAsientosMock(idSector) {
     for (let f = 0; f < config.filas; f++) {
         const numeroFila = String(f + 1); // Filas numeradas: 1, 2, 3...
         for (let n = 1; n <= config.asientosPorFila; n++) {
-            // Un ~12% de los asientos arrancan "ocupados" para simular ventas previas.
-            const yaOcupado = Math.random() < 0.12;
-
             nuevosAsientos.push({
                 idAsiento: `${idSector}-${numeroFila}-${n}`,
                 idSector: idSector,
@@ -119,7 +116,7 @@ export function generarAsientosMock(idSector) {
                 fila: numeroFila,
                 numero: n,
                 precio: precio,
-                estado: yaOcupado ? "ocupado" : "disponible",
+                estado: "disponible",
             });
         }
     }
@@ -176,9 +173,28 @@ export function obtenerAsientosSeleccionados() {
  * @param {object} [opciones]
  * @param {() => void} [opciones.onCambioSeleccion] - callback tras cada click válido
  */
+// Variable privada en memoria que limita la cantidad de asientos a seleccionar
+let _limiteAsientos = 4;
+
+/**
+ * Setter para actualizar el límite de selección (máximo absoluto de 4).
+ * @param {number|string} limite
+ */
+export function establecerLimiteAsientos(limite) {
+    const l = parseInt(limite, 10);
+    _limiteAsientos = isNaN(l) ? 4 : Math.max(1, Math.min(l, 4));
+}
+
+/**
+ * Getter para obtener el límite de selección actual.
+ * @returns {number}
+ */
+export function obtenerLimiteAsientos() {
+    return _limiteAsientos;
+}
+
 export function renderizarListaAsientos(contenedor, idSector, opciones = {}) {
     if (!contenedor) return;
-    const { onCambioSeleccion } = opciones;
 
     // Limpiamos el contenedor de forma controlada (sin innerHTML = "")
     while (contenedor.firstChild) {
@@ -217,7 +233,7 @@ export function renderizarListaAsientos(contenedor, idSector, opciones = {}) {
             .sort((a, b) => a.numero - b.numero);
 
         asientosDeFila.forEach((asiento) => {
-            const boton = crearBotonAsiento(asiento, onCambioSeleccion);
+            const boton = crearBotonAsiento(asiento, opciones);
             filaWrapper.appendChild(boton);
         });
 
@@ -231,10 +247,13 @@ export function renderizarListaAsientos(contenedor, idSector, opciones = {}) {
  * Crea el <button> dinámico de un asiento individual, con su dataset y
  * su listener de click para alternar selección.
  * @param {Asiento} asiento
- * @param {() => void} [onCambioSeleccion]
+ * @param {object} opciones
+ * @param {() => void} [opciones.onCambioSeleccion]
+ * @param {(limite: number) => void} [opciones.onLimiteExcedido]
  * @returns {HTMLButtonElement}
  */
-function crearBotonAsiento(asiento, onCambioSeleccion) {
+function crearBotonAsiento(asiento, opciones = {}) {
+    const { onCambioSeleccion, onLimiteExcedido } = opciones;
     const boton = document.createElement("button");
     boton.type = "button";
     boton.classList.add("btn-asiento");
@@ -252,15 +271,17 @@ function crearBotonAsiento(asiento, onCambioSeleccion) {
         boton.disabled = true;
     } else {
         boton.addEventListener("click", () => {
-            alternarSeleccionAsiento(asiento.idAsiento);
-            // Actualizamos solo el botón tocado, sin re-renderizar toda la grilla
-            const actualizado = _asientos.find((a) => a.idAsiento === asiento.idAsiento);
-            if (actualizado) {
-                boton.dataset.estado = actualizado.estado;
-                aplicarEstiloSegunEstado(boton, actualizado.estado);
-            }
-            if (typeof onCambioSeleccion === "function") {
-                onCambioSeleccion();
+            const exito = alternarSeleccionAsiento(asiento.idAsiento, onLimiteExcedido);
+            if (exito) {
+                // Actualizamos solo el botón tocado, sin re-renderizar toda la grilla
+                const actualizado = _asientos.find((a) => a.idAsiento === asiento.idAsiento);
+                if (actualizado) {
+                    boton.dataset.estado = actualizado.estado;
+                    aplicarEstiloSegunEstado(boton, actualizado.estado);
+                }
+                if (typeof onCambioSeleccion === "function") {
+                    onCambioSeleccion();
+                }
             }
         });
     }
@@ -268,7 +289,7 @@ function crearBotonAsiento(asiento, onCambioSeleccion) {
     return boton;
 }
 
-/** Aplica/quita clases visuales según el estado del asiento (estilos en asientos.html <style>). */
+/** Aplica/quita clases visuales según el estado del asiento. */
 function aplicarEstiloSegunEstado(boton, estado) {
     boton.classList.remove("btn-disponible", "btn-seleccionado", "btn-ocupado");
     if (estado === "disponible") boton.classList.add("btn-disponible");
@@ -282,22 +303,31 @@ function aplicarEstiloSegunEstado(boton, estado) {
 
 /**
  * Alterna el estado de un asiento entre "disponible" y "seleccionado",
- * actualiza el array en memoria Y persiste el cambio en storage.js
- * (lo cual dispara el evento 'storage' en otras pestañas).
+ * actualiza el array en memoria Y persiste el cambio en storage.js.
  * No hace nada si el asiento está "ocupado".
  * @param {string} idAsiento
+ * @param {(limite: number) => void} [onLimiteExcedido]
+ * @returns {boolean} true si se pudo realizar el cambio de estado, false si superó el límite.
  */
-export function alternarSeleccionAsiento(idAsiento) {
+export function alternarSeleccionAsiento(idAsiento, onLimiteExcedido) {
     const asiento = _asientos.find((a) => a.idAsiento === idAsiento);
-    if (!asiento || asiento.estado === "ocupado") return;
+    if (!asiento || asiento.estado === "ocupado") return false;
 
     if (asiento.estado === "disponible") {
+        const seleccionados = obtenerAsientosSeleccionados();
+        if (seleccionados.length >= _limiteAsientos) {
+            if (typeof onLimiteExcedido === "function") {
+                onLimiteExcedido(_limiteAsientos);
+            }
+            return false;
+        }
         asiento.estado = "seleccionado";
         agregarAsientoALaSeleccion(idAsiento);
     } else if (asiento.estado === "seleccionado") {
         asiento.estado = "disponible";
         quitarAsientoDeLaSeleccion(idAsiento);
     }
+    return true;
 }
 
 /* ============================================================================
