@@ -2,42 +2,451 @@
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="TicketApp – Portal de compra de entradas. Seleccioná tu asiento y pagá en línea." />
-  <title>TicketApp | Comprar Entradas</title>
-  <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />-->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TicketApp - Inicio</title>
+  <!-- Favicon -->
+  <link rel="icon" href="img/TicketApp.png" type="image/png">
+  <!-- Iconos para la lupa y el carrito -->
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <!-- Flag Icons (Banderas) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" />
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="assets/css/index.css">
 </head>
 
-<body class="bg-dark text-light">
+<body class="bg-white text-dark">
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-dark bg-dark border-bottom border-secondary px-4 py-3">
-    <span class="navbar-brand fw-bold"><i class="bi bi-ticket-perforated-fill me-2 text-primary"></i>TicketApp <span
-        class="badge bg-success ms-2" style="font-size:.7rem">USUARIO</span></span>
-    <button id="btn-logout" class="btn btn-outline-danger btn-sm">
-      <i class="bi bi-box-arrow-right me-1"></i>Cerrar sesión
-    </button>
-  </nav>
+  <!-- Sección del Navbar -->
+  <header class="d-flex flex-wrap justify-content-between align-items-center px-4 py-3 border-bottom shadow-sm">
+    <div class="d-flex align-items-center gap-3 col-12 col-lg-6 mb-3 mb-lg-0">
+      <!-- Logo placeholder -->
+      <img src="img/TicketApp.png" alt="Logo TicketApp" class="img-fluid object-fit-contain" width="140" height="40">
 
-  <main class="container-fluid p-4">
-    <h1 class="h4 mb-4">Seleccioná tu Partido y Asiento</h1>
-    <p class="text-muted">Módulos <code>user.js</code> y <code>cart.js</code> se integrarán aquí — mapa de asientos y
-      carrito.</p>
-  </main>
+      <!-- Buscador -->
+      <div class="input-group flex-nowrap w-75" id="nav-search">
+        <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted px-3"><i
+            class='bx bx-search'></i></span>
+        <input type="text" class="form-control border-start-0 rounded-end-pill shadow-none"
+          placeholder="Buscar partidos o países">
+      </div>
+    </div>
 
+    <div class="d-flex align-items-center justify-content-end gap-3 col-12 col-lg-6">
+      <a href="perfil.html" id="nav-account" class="text-decoration-none text-dark small fw-medium text-nowrap">Ver mi
+        cuenta</a>
+
+      <a href="carrito.html" id="nav-cart" class="text-decoration-none text-dark position-relative me-2">
+        <i class='bx bx-cart fs-4'></i>
+        <span id="cart-badge"
+          class="position-absolute top-0 start-100 translate-middle badge rounded-pill border border-dark bg-light text-dark p-1 d-none"></span>
+      </a>
+
+      <span id="nav-divider" class="text-secondary">|</span>
+
+      <a href="login.html" id="nav-auth-btn" class="btn btn-brand rounded-3 fw-bold text-nowrap px-4">Cerrar
+        sesión</a>
+    </div>
+  </header>
+
+  <!-- Sección del Hero Banner -->
+  <section
+    class="hero-section d-flex justify-content-center align-items-center text-center px-3 py-5 my-4 mx-3 rounded-3 shadow-sm">
+    <div class="d-flex flex-column align-items-center py-5 my-5 col-12 col-md-8">
+      <span class="badge bg-brand rounded-pill px-3 py-2 mb-4">WORLD CUP 2026</span>
+      <h1 class="display-3 fw-bold text-uppercase mb-4">SIENTE LA PASIÓN DEL JUEGO MÁS GRANDE DEL MUNDO</h1>
+      <p class="lead mb-5 col-10">Asegura tu lugar en la historia. Entradas oficiales disponibles para
+        todos los estadios y fases del torneo.</p>
+      <a href="partidos.html" class="btn btn-brand btn-lg px-4 py-2 fw-bold text-uppercase">Comprar
+        entradas</a>
+    </div>
+  </section>
+
+  <!-- Sección Próximos Partidos -->
+  <section class="container-fluid px-4 mt-5 mb-5">
+    <!-- Encabezado de la sección -->
+    <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
+      <div>
+        <h2 class="text-uppercase fw-bold mb-1 text-brand">Próximos partidos</h2>
+        <p class="mb-0 text-muted">No te pierdas los encuentros más emocionantes de la semana</p>
+      </div>
+    </div>
+
+    <!-- Contenedor relativo para poder posicionar botones absolutos por encima del carrusel -->
+    <div id="carousel-wrapper" class="position-relative">
+
+      <!-- Botón Flotante Retroceso (Izquierda) -->
+      <div
+        class="position-absolute top-0 start-0 h-100 d-flex align-items-center z-3 carousel-btn-overlay-left hidden w-120px pe-none">
+        <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient-left z-n1"></div>
+        <button type="button"
+          class="btn btn-brand rounded-circle p-3 shadow-lg d-flex align-items-center justify-content-center ms-3 btn-circle-50 pe-auto">
+          <i class='bx bx-chevron-left fs-3'></i>
+        </button>
+      </div>
+
+      <!-- Carrusel de Tarjetas -->
+      <div id="matches-carousel" class="d-flex flex-nowrap gap-4 overflow-auto pb-4 px-1">
+
+        <!-- Tarjeta 1 (Sudáfrica vs Canadá) -->
+        <div class="card border-brand rounded-3 flex-shrink-0 col-11 col-md-7 col-lg-5 col-xl-4 p-0 shadow-sm">
+          <div class="row g-0 h-100">
+            <!-- Info Principal -->
+            <div class="col-9 col-sm-10 p-4 bg-white rounded-start-3">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="badge bg-brand-light rounded-pill px-3 py-2 border-0">Dieciseisavos
+                  de final</span>
+                <span class="small fw-bold text-muted">28 Jun</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center text-center mb-4 px-2">
+                <!-- Equipo 1 -->
+                <div class="col-4 d-flex flex-column align-items-center">
+                  <div class="col-8 col-sm-6 mb-2">
+                    <div class="ratio ratio-1x1">
+                      <div class="rounded-circle border border-secondary bg-light overflow-hidden">
+                        <span class="fi fi-za fis w-100 h-100 d-block"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="small fw-bold text-center lh-sm text-wrap">SUDÁFRICA</span>
+                </div>
+
+                <!-- VS -->
+                <span class="fw-bold fs-5 text-muted col-2">VS</span>
+
+                <!-- Equipo 2 -->
+                <div class="col-4 d-flex flex-column align-items-center">
+                  <div class="col-8 col-sm-6 mb-2">
+                    <div class="ratio ratio-1x1">
+                      <div class="rounded-circle border border-secondary bg-light overflow-hidden">
+                        <span class="fi fi-ca fis w-100 h-100 d-block"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="small fw-bold text-center lh-sm text-wrap">CANADÁ</span>
+                </div>
+              </div>
+
+              <div>
+                <div class="small text-muted d-flex align-items-center gap-2 mb-2">
+                  <i class='bx bx-time fs-5'></i> 20:00 Local (GMT-5)
+                </div>
+                <div class="small text-muted d-flex align-items-center gap-2">
+                  <i class='bx bx-map fs-5'></i> SoFi Stadium, Los Angeles
+                </div>
+                <div class="small fw-bold text-brand d-flex align-items-center gap-2 mt-1">
+                  <i class='bx bx-map fs-5 invisible'></i> Desde $45.00
+                </div>
+              </div>
+            </div>
+
+            <!-- Ticket Stub -->
+            <div
+              class="col-3 col-sm-2 border-start border-2 border-light-subtle d-flex flex-column align-items-center justify-content-center bg-light rounded-end-3 py-4">
+              <i class='bx bx-receipt fs-4 mb-3 text-brand'></i>
+              <div class="d-flex flex-column align-items-center fw-bold text-brand small lh-1 gap-1">
+                <span>T</span><span>I</span><span>C</span><span>K</span><span>E</span><span>T</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 2 (Brasil vs Japon) -->
+        <div class="card border-brand rounded-3 flex-shrink-0 col-11 col-md-7 col-lg-5 col-xl-4 p-0 shadow-sm">
+          <div class="row g-0 h-100">
+            <div class="col-9 col-sm-10 p-4 bg-white rounded-start-3">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="badge bg-brand-light rounded-pill px-3 py-2 border-0">Dieciseisavos de
+                  final</span>
+                <span class="small fw-bold text-muted">29 Jun</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center text-center mb-4 px-2">
+                <div class="col-4 d-flex flex-column align-items-center">
+                  <div class="col-8 col-sm-6 mb-2">
+                    <div class="ratio ratio-1x1">
+                      <div class="rounded-circle border border-secondary bg-light overflow-hidden">
+                        <span class="fi fi-br fis w-100 h-100 d-block"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="small fw-bold text-center lh-sm text-wrap">BRASIL</span>
+                </div>
+
+                <span class="fw-bold fs-5 text-muted col-2">VS</span>
+
+                <div class="col-4 d-flex flex-column align-items-center">
+                  <div class="col-8 col-sm-6 mb-2">
+                    <div class="ratio ratio-1x1">
+                      <div class="rounded-circle border border-secondary bg-light overflow-hidden">
+                        <span class="fi fi-jp fis w-100 h-100 d-block"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="small fw-bold text-center lh-sm text-wrap">JAPÓN</span>
+                </div>
+              </div>
+
+              <div>
+                <div class="small text-muted d-flex align-items-center gap-2 mb-2">
+                  <i class='bx bx-time fs-5'></i> 18:00 Local (GMT-7)
+                </div>
+                <div class="small text-muted d-flex align-items-center gap-2">
+                  <i class='bx bx-map fs-5'></i> NRG Stadium, Houston
+                </div>
+                <div class="small fw-bold text-brand d-flex align-items-center gap-2 mt-1">
+                  <i class='bx bx-map fs-5 invisible'></i> Desde $45.00
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="col-3 col-sm-2 border-start border-2 border-light-subtle d-flex flex-column align-items-center justify-content-center bg-light rounded-end-3 py-4">
+              <i class='bx bx-receipt fs-4 mb-3 text-brand'></i>
+              <div class="d-flex flex-column align-items-center fw-bold text-brand small lh-1 gap-1">
+                <span>T</span><span>I</span><span>C</span><span>K</span><span>E</span><span>T</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 3 (Paraguay vs Alemania) -->
+        <div class="card border-brand rounded-3 flex-shrink-0 col-11 col-md-7 col-lg-5 col-xl-4 p-0 shadow-sm">
+          <div class="row g-0 h-100">
+            <div class="col-9 col-sm-10 p-4 bg-white rounded-start-3">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="badge bg-brand-light rounded-pill px-3 py-2 border-0">Dieciseisavos de
+                  final</span>
+                <span class="small fw-bold text-muted">29 Jun</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center text-center mb-4 px-2">
+                <div class="col-4 d-flex flex-column align-items-center">
+                  <div class="col-8 col-sm-6 mb-2">
+                    <div class="ratio ratio-1x1">
+                      <div class="rounded-circle border border-secondary bg-light overflow-hidden">
+                        <span class="fi fi-py fis w-100 h-100 d-block"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="small fw-bold text-center lh-sm text-wrap">PARAGUAY</span>
+                </div>
+
+                <span class="fw-bold fs-5 text-muted col-2">VS</span>
+
+                <div class="col-4 d-flex flex-column align-items-center">
+                  <div class="col-8 col-sm-6 mb-2">
+                    <div class="ratio ratio-1x1">
+                      <div class="rounded-circle border border-secondary bg-light overflow-hidden">
+                        <span class="fi fi-de fis w-100 h-100 d-block"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="small fw-bold text-center lh-sm text-wrap">ALEMANIA</span>
+                </div>
+              </div>
+
+              <div>
+                <div class="small text-muted d-flex align-items-center gap-2 mb-2">
+                  <i class='bx bx-time fs-5'></i> 21:00 Local (GMT-4)
+                </div>
+                <div class="small text-muted d-flex align-items-center gap-2">
+                  <i class='bx bx-map fs-5'></i> Gillette Stadium, Boston
+                </div>
+                <div class="small fw-bold text-brand d-flex align-items-center gap-2 mt-1">
+                  <i class='bx bx-map fs-5 invisible'></i> Desde $45.00
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="col-3 col-sm-2 border-start border-2 border-light-subtle d-flex flex-column align-items-center justify-content-center bg-light rounded-end-3 py-4">
+              <i class='bx bx-receipt fs-4 mb-3 text-brand'></i>
+              <div class="d-flex flex-column align-items-center fw-bold text-brand small lh-1 gap-1">
+                <span>T</span><span>I</span><span>C</span><span>K</span><span>E</span><span>T</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 4 (Paises Bajos vs Marruecos) -->
+        <div class="card border-brand rounded-3 flex-shrink-0 col-11 col-md-7 col-lg-5 col-xl-4 p-0 shadow-sm">
+          <div class="row g-0 h-100">
+            <div class="col-9 col-sm-10 p-4 bg-white rounded-start-3">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="badge bg-brand-light rounded-pill px-3 py-2 border-0">Dieciseisavos de
+                  final</span>
+                <span class="small fw-bold text-muted">29 Jun</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center text-center mb-4 px-2">
+                <div class="col-4 d-flex flex-column align-items-center">
+                  <div class="col-8 col-sm-6 mb-2">
+                    <div class="ratio ratio-1x1">
+                      <div class="rounded-circle border border-secondary bg-light overflow-hidden">
+                        <span class="fi fi-nl fis w-100 h-100 d-block"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="small fw-bold text-center lh-sm text-wrap">PAÍSES BAJOS</span>
+                </div>
+
+                <span class="fw-bold fs-5 text-muted col-2">VS</span>
+
+                <div class="col-4 d-flex flex-column align-items-center">
+                  <div class="col-8 col-sm-6 mb-2">
+                    <div class="ratio ratio-1x1">
+                      <div class="rounded-circle border border-secondary bg-light overflow-hidden">
+                        <span class="fi fi-ma fis w-100 h-100 d-block"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="small fw-bold text-center lh-sm text-wrap">MARRUECOS</span>
+                </div>
+              </div>
+
+              <div>
+                <div class="small text-muted d-flex align-items-center gap-2 mb-2">
+                  <i class='bx bx-time fs-5'></i> 19:00 Local (GMT-5)
+                </div>
+                <div class="small text-muted d-flex align-items-center gap-2">
+                  <i class='bx bx-map fs-5'></i> BBVA Stadium, Monterrey
+                </div>
+                <div class="small fw-bold text-brand d-flex align-items-center gap-2 mt-1">
+                  <i class='bx bx-map fs-5 invisible'></i> Desde $45.00
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="col-3 col-sm-2 border-start border-2 border-light-subtle d-flex flex-column align-items-center justify-content-center bg-light rounded-end-3 py-4">
+              <i class='bx bx-receipt fs-4 mb-3 text-brand'></i>
+              <div class="d-flex flex-column align-items-center fw-bold text-brand small lh-1 gap-1">
+                <span>T</span><span>I</span><span>C</span><span>K</span><span>E</span><span>T</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 5 (Noruega vs Costa de Marfil) -->
+        <div class="card border-brand rounded-3 flex-shrink-0 col-11 col-md-7 col-lg-5 col-xl-4 p-0 shadow-sm">
+          <div class="row g-0 h-100">
+            <div class="col-9 col-sm-10 p-4 bg-white rounded-start-3">
+              <div class="d-flex justify-content-between align-items-center mb-4">
+                <span class="badge bg-brand-light rounded-pill px-3 py-2 border-0">Dieciseisavos de
+                  final</span>
+                <span class="small fw-bold text-muted">30 Jun</span>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center text-center mb-4 px-2">
+                <div class="col-4 d-flex flex-column align-items-center">
+                  <div class="col-8 col-sm-6 mb-2">
+                    <div class="ratio ratio-1x1">
+                      <div class="rounded-circle border border-secondary bg-light overflow-hidden">
+                        <span class="fi fi-no fis w-100 h-100 d-block"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="small fw-bold text-center lh-sm text-wrap">NORUEGA</span>
+                </div>
+
+                <span class="fw-bold fs-5 text-muted col-2">VS</span>
+
+                <div class="col-4 d-flex flex-column align-items-center">
+                  <div class="col-8 col-sm-6 mb-2">
+                    <div class="ratio ratio-1x1">
+                      <div class="rounded-circle border border-secondary bg-light overflow-hidden">
+                        <span class="fi fi-ci fis w-100 h-100 d-block"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="small fw-bold text-center lh-sm text-wrap">COSTA DE MARFIL</span>
+                </div>
+              </div>
+
+              <div>
+                <div class="small text-muted d-flex align-items-center gap-2 mb-2">
+                  <i class='bx bx-time fs-5'></i> 20:00 Local (GMT-4)
+                </div>
+                <div class="small text-muted d-flex align-items-center gap-2">
+                  <i class='bx bx-map fs-5'></i> AT&T Stadium, Arlington
+                </div>
+                <div class="small fw-bold text-brand d-flex align-items-center gap-2 mt-1">
+                  <i class='bx bx-map fs-5 invisible'></i> Desde $45.00
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="col-3 col-sm-2 border-start border-2 border-light-subtle d-flex flex-column align-items-center justify-content-center bg-light rounded-end-3 py-4">
+              <i class='bx bx-receipt fs-4 mb-3 text-brand'></i>
+              <div class="d-flex flex-column align-items-center fw-bold text-brand small lh-1 gap-1">
+                <span>T</span><span>I</span><span>C</span><span>K</span><span>E</span><span>T</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón Sticky Ver más -->
+        <div class="position-sticky end-0 d-flex align-items-center z-3 carousel-btn-overlay ps-5">
+          <div class="position-absolute top-0 start-0 w-100 h-100 bg-gradient-right z-n1">
+          </div>
+          <a href="partidos.html"
+            class="btn btn-brand rounded-pill px-4 py-3 fw-bold shadow-lg d-flex align-items-center gap-2 me-3 text-nowrap">
+            Ver más
+          </a>
+        </div>
+
+      </div> <!-- Fin de matches-carousel -->
+    </div> <!-- Fin de position-relative wrapper -->
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-footer pt-5 pb-4 px-4 mt-5 border-top">
+    <div class="container-fluid">
+      <div class="row mb-5">
+        <!-- Columna Izquierda -->
+        <div class="col-12 col-md-6 mb-4 mb-md-0">
+          <!-- Logo placeholder -->
+          <img src="img/logoticketappblanco.png" alt="Logo TicketApp blanco" class="img-fluid object-fit-contain mb-3"
+            width="120" height="35">
+        </div>
+      </div>
+
+      <hr class="border-secondary opacity-25 mb-4">
+
+      <!-- Derechos de autor -->
+      <div class="small text-center">
+        &copy; 2026 Todos los derechos reservados
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal de Confirmación de Cierre de Sesión -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <!-- Contenido del modal -->
+      <div class="modal-content border-0 shadow-lg rounded-4 p-4 text-center">
+        <!-- Título del modal -->
+        <h4 class="fw-bold mb-4">¿Estás seguro de que quieres cerrar sesión?</h4>
+        <!-- Botón de confirmar cierre (Rojo) -->
+        <button type="button" id="confirm-logout-btn" class="btn btn-brand rounded-3 fw-bold w-100 py-3 mb-3">Cerrar
+          sesión</button>
+        <!-- Botón de cancelar (Blanco con borde) -->
+        <button type="button" class="btn bg-white border border-secondary-subtle rounded-3 fw-bold w-100 py-3 text-dark"
+          data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmFgFMa+t+7tViXohFD0lDfS60D" crossorigin="anonymous"></script>
-
-  <!--
-    auth.js verifica rol 'user'.
-    user.js y cart.js se integrarán en la siguiente fase.
-  -->
-  <script type="module" src="js/auth.js"></script>
-  <script type="module" src="js/user.js"></script>
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
+  <script src="assets/js/main.js"></script>
 </body>
 
 </html>
