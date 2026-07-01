@@ -110,13 +110,44 @@ if ($registerForm) {
     $registerForm.addEventListener('submit', (event) => {
         event.preventDefault();
 
+        // Redirigir la acción de submit al botón correspondiente del paso activo
+        const stepAccount = document.getElementById('step-account-fields');
+        if (stepAccount && !stepAccount.classList.contains('d-none')) {
+            const $btnContinuarCuenta = document.getElementById('btn-continuar-cuenta');
+            if ($btnContinuarCuenta) $btnContinuarCuenta.click();
+        } else {
+            const $btnContinuar = document.getElementById('btn-continuar');
+            if ($btnContinuar) $btnContinuar.click();
+        }
+    });
+}
+
+// PASO 1: Validación y transición de campos de Cuenta
+const $btnContinuarCuenta = document.getElementById('btn-continuar-cuenta');
+if ($btnContinuarCuenta) {
+    $btnContinuarCuenta.addEventListener('click', (e) => {
+        const stepIdentity = document.getElementById('step-identity-fields');
+        const stepAccount = document.getElementById('step-account-fields');
+        const sidebarStepAccount = document.getElementById('sidebar-step-account');
+        const sidebarStepIdentity = document.getElementById('sidebar-step-identity');
+        const formHeader = document.getElementById('form-header');
+        const formSubtitle = document.getElementById('form-subtitle');
+
+        $authMessage.className = 'mt-3 fw-bold small text-center';
+        $authMessage.textContent = '';
+
         const username = $username.value.trim();
         const password = $password.value;
         const passwordConfirmed = $passwordConfirmed.value;
         const email = $email.value.trim().toLowerCase();
 
-        $authMessage.className = 'mt-3 fw-bold small text-center';
+        // Validación nativa HTML5 de los campos del paso de cuenta
+        if (!$email.checkValidity() || !$username.checkValidity() || !$password.checkValidity() || !$passwordConfirmed.checkValidity()) {
+            $registerForm.classList.add('was-validated');
+            return;
+        }
 
+        // Validaciones personalizadas
         if (password !== passwordConfirmed) {
             $authMessage.className = 'mt-3 fw-bold small text-center text-danger';
             $authMessage.textContent = 'Las contraseñas no coinciden.';
@@ -135,6 +166,59 @@ if ($registerForm) {
             return;
         }
 
+        // Si son válidos, removemos clases de validación y pasamos al Paso 2 (Identidad)
+        $registerForm.classList.remove('was-validated');
+
+        // Transición de paneles
+        stepAccount.classList.add('d-none');
+        stepIdentity.classList.remove('d-none');
+
+        // Actualizar sidebar (Creá tu cuenta desactivado, Validá tu identidad activo)
+        if (sidebarStepAccount && sidebarStepIdentity) {
+            sidebarStepAccount.classList.remove('text-white', 'fw-bold');
+            sidebarStepAccount.classList.add('text-white-50', 'opacity-50');
+            sidebarStepAccount.querySelector('span').classList.remove('bg-brand');
+            sidebarStepAccount.querySelector('span').classList.add('bg-white', 'bg-opacity-10');
+
+            sidebarStepIdentity.classList.remove('text-white-50', 'opacity-50');
+            sidebarStepIdentity.classList.add('text-white', 'fw-bold');
+            sidebarStepIdentity.querySelector('span').classList.remove('bg-white', 'bg-opacity-10');
+            sidebarStepIdentity.querySelector('span').classList.add('bg-brand');
+        }
+
+        // Actualizar encabezados
+        if (formHeader && formSubtitle) {
+            formHeader.textContent = 'REGISTRATE EN TICKETAPP';
+            formSubtitle.textContent = 'Para formar parte de Ticket APP necesitas validar tu identidad, por favor completá los siguientes datos:';
+        }
+    });
+}
+
+// PASO 2: Validación de Identidad y finalización de registro
+const $btnContinuar = document.getElementById('btn-continuar');
+if ($btnContinuar) {
+    $btnContinuar.addEventListener('click', (e) => {
+        const doc = document.getElementById('documento');
+        const nac = document.getElementById('nacionalidad');
+        const tipo = document.getElementById('tipo-documento');
+        const term = document.getElementById('terminos');
+
+        $authMessage.className = 'mt-3 fw-bold small text-center';
+        $authMessage.textContent = '';
+
+        // Validación nativa HTML5 de los campos del paso de identidad
+        if (!doc.checkValidity() || !nac.checkValidity() || !tipo.checkValidity() || !term.checkValidity()) {
+            $registerForm.classList.add('was-validated');
+            return;
+        }
+
+        // Si es válido, procedemos con el registro del usuario
+        $registerForm.classList.remove('was-validated');
+
+        const username = $username.value.trim();
+        const password = $password.value;
+        const email = $email.value.trim().toLowerCase();
+
         const nuevoUsuario = {
             id_usuario: "U" + String(usuarios.length + 1).padStart(3, '0'),
             nombre_usuario: username,
@@ -148,60 +232,9 @@ if ($registerForm) {
 
         $authMessage.className = 'mt-3 fw-bold small text-center text-success';
         $authMessage.textContent = '¡Registro exitoso! Redirigiendo al login...';
-        
-        // CORRECCIÓN DE REDIRECCIÓN: Apunta a index.html que es el login real del servidor
-        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
-    });
-}
 
-// TRANSICIÓN DE PASOS EN REGISTRO (FORMULARIO MULTI-PASO)
-const $btnContinuar = document.getElementById('btn-continuar');
-if ($btnContinuar) {
-    $btnContinuar.addEventListener('click', (e) => {
-        const stepIdentity = document.getElementById('step-identity-fields');
-        const stepAccount = document.getElementById('step-account-fields');
-        const sidebarStep2 = document.getElementById('sidebar-step-2');
-        const sidebarStep3 = document.getElementById('sidebar-step-3');
-        const formHeader = document.getElementById('form-header');
-        const formSubtitle = document.getElementById('form-subtitle');
-
-        // Obtenemos los campos del Paso 1
-        const doc = document.getElementById('documento');
-        const nac = document.getElementById('nacionalidad');
-        const tipo = document.getElementById('tipo-documento');
-        const term = document.getElementById('terminos');
-
-        // Ejecutamos validación nativa de HTML5 en los campos del Paso 1
-        if (!doc.checkValidity() || !nac.checkValidity() || !tipo.checkValidity() || !term.checkValidity()) {
-            $registerForm.classList.add('was-validated');
-            return;
-        }
-
-        // Si son válidos, evitamos envío nativo y pasamos al Paso 2
-        e.preventDefault();
-        $registerForm.classList.remove('was-validated');
-
-        // Transición de paneles
-        stepIdentity.classList.add('d-none');
-        stepAccount.classList.remove('d-none');
-
-        // Actualizar sidebar (Paso 2 completado, Paso 3 activo)
-        if (sidebarStep2 && sidebarStep3) {
-            sidebarStep2.parentElement.children[1].classList.remove('text-white', 'fw-bold');
-            sidebarStep2.parentElement.children[1].classList.add('text-white-50', 'opacity-50');
-            sidebarStep2.querySelector('span').classList.remove('bg-brand');
-            sidebarStep2.querySelector('span').classList.add('bg-white', 'bg-opacity-10');
-
-            sidebarStep3.classList.remove('text-white-50', 'opacity-50');
-            sidebarStep3.classList.add('text-white', 'fw-bold');
-            sidebarStep3.querySelector('span').classList.remove('bg-white', 'bg-opacity-10');
-            sidebarStep3.querySelector('span').classList.add('bg-brand');
-        }
-
-        // Actualizar encabezados
-        if (formHeader && formSubtitle) {
-            formHeader.textContent = 'CREÁ TU CUENTA TICKETAPP';
-            formSubtitle.textContent = 'Por favor completa los datos de tu cuenta para finalizar el registro:';
-        }
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1000);
     });
 }
