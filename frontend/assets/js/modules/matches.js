@@ -1,6 +1,7 @@
 'use strict';
-//id de cada partido //
-const MATCHES = {
+
+// Estructura de partidos por defecto
+const DEFAULT_MATCHES = {
   '16avos': [
     { id: 1, home: { name: 'Alemania', flag: 'de' }, away: { name: 'Paraguay', flag: 'py' }, date: 'Lunes, 29 jun', time: '15:00 HS.', stadium: 'MetLife Stadium', city: 'East Rutherford, EE.UU.' },
     { id: 2, home: { name: 'Francia', flag: 'fr' }, away: { name: 'Suecia', flag: 'se' }, date: 'Lunes, 29 jun', time: '19:00 HS.', stadium: 'Rose Bowl', city: 'Pasadena, EE.UU.' },
@@ -20,11 +21,11 @@ const MATCHES = {
     { id: 16, home: { name: 'Colombia', flag: 'co' }, away: { name: 'Ghana', flag: 'gh' }, date: 'Lunes, 6 jul', time: '19:00 HS.', stadium: 'SoFi Stadium', city: 'Inglewood, EE.UU.' },
   ],
   '8avos': [
-    { id: 17, home: { name: 'Paraguay', flag: 'py' }, away: { name: 'Gan. Francia/Suecia', flag: 'placeholder' }, date: 'Viernes, 10 jul', time: '15:00 HS.', stadium: 'MetLife Stadium', city: 'East Rutherford, EE.UU.' },
-    { id: 18, home: { name: 'Gan. Sudáfrica/Canadá', flag: 'placeholder' }, away: { name: 'Gan. P.Bajos/Marruec.', flag: 'placeholder' }, date: 'Viernes, 10 jul', time: '19:00 HS.', stadium: 'Rose Bowl', city: 'Pasadena, EE.UU.' },
+    { id: 17, home: { name: 'Paraguay', flag: 'py' }, away: { name: 'Francia', flag: 'fr' }, date: 'Viernes, 10 jul', time: '15:00 HS.', stadium: 'MetLife Stadium', city: 'East Rutherford, EE.UU.' },
+    { id: 18, home: { name: 'Gan. Sudáfrica/Canadá', flag: 'placeholder' }, away: { name: 'Marruecos', flag: 'ma' }, date: 'Viernes, 10 jul', time: '19:00 HS.', stadium: 'Rose Bowl', city: 'Pasadena, EE.UU.' },
     { id: 19, home: { name: 'Gan. Portugal/Croacia', flag: 'placeholder' }, away: { name: 'Gan. España/Austria', flag: 'placeholder' }, date: 'Sábado, 11 jul', time: '15:00 HS.', stadium: 'Hard Rock Stadium', city: 'Miami Gardens, EE.UU.' },
     { id: 20, home: { name: 'Gan. EE.UU./Bosnia', flag: 'placeholder' }, away: { name: 'Gan. Bélgica/Senegal', flag: 'placeholder' }, date: 'Sábado, 11 jul', time: '19:00 HS.', stadium: 'AT&T Stadium', city: 'Arlington, EE.UU.' },
-    { id: 21, home: { name: 'Brasil', flag: 'br' }, away: { name: 'Gan. Marfil/Noruega', flag: 'placeholder' }, date: 'Domingo, 12 jul', time: '15:00 HS.', stadium: 'Lumen Field', city: 'Seattle, EE.UU.' },
+    { id: 21, home: { name: 'Brasil', flag: 'br' }, away: { name: 'Costa de Marfil', flag: 'ci' }, date: 'Domingo, 12 jul', time: '15:00 HS.', stadium: 'Lumen Field', city: 'Seattle, EE.UU.' },
     { id: 22, home: { name: 'Gan. México/Ecuador', flag: 'placeholder' }, away: { name: 'Gan. Ing./Congo', flag: 'placeholder' }, date: 'Domingo, 12 jul', time: '19:00 HS.', stadium: 'Estadio Azteca', city: 'Ciudad de México, México' },
     { id: 23, home: { name: 'Gan. Argentina/Cabo Verde', flag: 'placeholder' }, away: { name: 'Gan. Australia/Egipto', flag: 'placeholder' }, date: 'Lunes, 13 jul', time: '15:00 HS.', stadium: 'Gillette Stadium', city: 'Foxborough, EE.UU.' },
     { id: 24, home: { name: 'Gan. Suiza/Argelia', flag: 'placeholder' }, away: { name: 'Gan. Colombia/Ghana', flag: 'placeholder' }, date: 'Lunes, 13 jul', time: '19:00 HS.', stadium: 'SoFi Stadium', city: 'Inglewood, EE.UU.' },
@@ -44,14 +45,39 @@ const MATCHES = {
   ]
 };
 
-// Valor de cada sector //
-const SECTOR_PRICES = { A: 270000, B: 180000, C: 140000, D: 350000 };
+// Precios por defecto
+const DEFAULT_SECTOR_PRICES = {
+  norte: 250000,
+  sur: 250000,
+  platea: 300000,
+  palco: 500000
+};
+
+// Carga datos desde localStorage o usa defaults
+const MATCHES = JSON.parse(localStorage.getItem('MATCHES')) || DEFAULT_MATCHES;
+const SECTOR_PRICES = JSON.parse(localStorage.getItem('SECTOR_PRICES')) || DEFAULT_SECTOR_PRICES;
+
 const VENTA_DATES = {
   1: '22/06', 2: '22/06', 3: '23/06', 4: '23/06', 5: '24/06', 6: '24/06', 7: '25/06', 8: '25/06',
   9: '26/06', 10: '26/06', 11: '27/06', 12: '27/06', 13: '28/06', 14: '28/06', 15: '29/06', 16: '29/06'
 };
 
-// Ayudante para calcular coordenadas //
+// Clasifica el sector según ID y coordenadas
+const getSectorCategory = (sid) => {
+  if (sid.startsWith('A')) return 'palco';
+  if (sid.startsWith('D')) return 'platea';
+  
+  const num = parseInt(sid.substring(1), 10);
+  if (sid.startsWith('B')) {
+    return num <= 4 ? 'norte' : 'sur';
+  }
+  if (sid.startsWith('C')) {
+    return num <= 5 ? 'norte' : 'sur';
+  }
+  return 'norte';
+};
+
+// Calcula coordenadas de elipse
 const getEllipseCoord = (theta_deg, rx, ry) => {
   const theta = theta_deg * Math.PI / 180;
   const x = rx * Math.cos(theta);
@@ -61,13 +87,16 @@ const getEllipseCoord = (theta_deg, rx, ry) => {
   return { x, y, angle: angle_deg };
 };
 
-// Generador de distribución de secciones del estadio //
+// Genera mapa de secciones
 const STADIUM_SECTIONS = (() => {
+  const savedSections = localStorage.getItem('STADIUM_SECTIONS');
+  if (savedSections) return JSON.parse(savedSections);
+
   const s = [];
   const cx = 290;
   const cy = 245;
 
-  // Anillo interior A //
+  // Anillo interior A
   const rxA = 172;
   const ryA = 132;
   for (let i = 0; i < 30; i++) {
@@ -84,7 +113,7 @@ const STADIUM_SECTIONS = (() => {
     });
   }
 
-  // Filas rectas exteriores - Superiores //
+  // Rectas superiores
   [
     { id: 'B1', cx: 231, cy: 65, w: 32, h: 17, angle: 0, avail: true },
     { id: 'B2', cx: 268, cy: 65, w: 32, h: 17, angle: 0, avail: true },
@@ -97,7 +126,7 @@ const STADIUM_SECTIONS = (() => {
     { id: 'C5', cx: 346, cy: 40, w: 28, h: 18, angle: 0, avail: true }
   ].forEach(item => s.push(item));
 
-  // Filas rectas exteriores - Inferiores //
+  // Rectas inferiores
   [
     { id: 'B5', cx: 231, cy: 425, w: 32, h: 17, angle: 0, avail: true },
     { id: 'B6', cx: 268, cy: 425, w: 32, h: 17, angle: 0, avail: true },
@@ -110,7 +139,7 @@ const STADIUM_SECTIONS = (() => {
     { id: 'C10', cx: 346, cy: 450, w: 28, h: 18, angle: 0, avail: true }
   ].forEach(item => s.push(item));
 
-  // Curva exterior derecha //
+  // Curva derecha
   const rxD = 222;
   const ryD = 182;
   for (let j = 0; j < 13; j++) {
@@ -127,7 +156,7 @@ const STADIUM_SECTIONS = (() => {
     });
   }
 
-  // Curva exterior izquierda //
+  // Curva izquierda
   for (let k = 0; k < 13; k++) {
     const thetaL = 116 + (k * 10.6);
     const pL = getEllipseCoord(thetaL, rxD, ryD);
@@ -169,7 +198,7 @@ const getFlagHtml = (code, name) => {
   return `<img src="https://flagcdn.com/w80/${code}.png" alt="${name}" class="ta-flag-img">`;
 };
 
-// Renderizar tarjeta de partido en el calendario
+// Tarjeta de partido
 const matchCard = (m, phase) => {
   const isAvail = (phase === '16avos');
   const btnHtml = isAvail
@@ -204,6 +233,7 @@ const matchCard = (m, phase) => {
   `;
 };
 
+// Inicializa calendario
 const initCalendar = () => {
   const container = document.getElementById('matches-container');
   const btns = document.querySelectorAll('.ta-phase-btn');
@@ -227,6 +257,7 @@ const initCalendar = () => {
   render('16avos');
 };
 
+// Inicializa vista del estadio
 const initEstadio = () => {
   const params = new URLSearchParams(location.search);
   const match = findMatch(params.get('partido'));
@@ -251,19 +282,14 @@ const initEstadio = () => {
   }
 
   buildSVG();
-
-  // Destacar sector A11 por defecto al cargar
-  setTimeout(() => {
-    const a11G = document.querySelector('.st-sec[data-sid="A11"]');
-    if (a11G) selectSector(a11G);
-  }, 100);
 };
 
+// Construye SVG del estadio
 const buildSVG = () => {
   const svg = document.getElementById('stadium-map');
   if (!svg) return;
 
-  // Renderizar campo de fútbol verde con dimensiones compactas para evitar superposiciones
+  // Campo de juego
   const field = `
     <rect x="220" y="195" width="140" height="100" rx="4" fill="#28a745"/>
     <line x1="290" y1="195" x2="290" y2="295" stroke="white" stroke-width="1.8"/>
@@ -275,16 +301,14 @@ const buildSVG = () => {
     <circle cx="290" cy="245" r="2.2" fill="white"/>
   `;
 
+  // Sectores
   const secs = STADIUM_SECTIONS.map(sec => {
-    const fill = '#d5d5d5';
-    const stroke = '#b3b3b3';
-    const textColor = '#4d4d4d';
     const transformStr = ` transform="${getSectorTransform(sec, false)}"`;
 
     return `
-      <g class="st-sec" data-sid="${sec.id}" data-avail="${sec.avail}" style="cursor:pointer"${transformStr}>
-        <rect x="-${sec.w / 2}" y="-${sec.h / 2}" width="${sec.w}" height="${sec.h}" rx="3" fill="${fill}" stroke="${stroke}" stroke-width="1"/>
-        <text x="0" y="3" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="600" font-size="6.8" fill="${textColor}">${sec.id}</text>
+      <g class="st-sec" data-sid="${sec.id}" data-avail="${sec.avail}"${transformStr}>
+        <rect x="-${sec.w / 2}" y="-${sec.h / 2}" width="${sec.w}" height="${sec.h}" rx="3"/>
+        <text x="0" y="3" text-anchor="middle" font-family="Montserrat, sans-serif" font-weight="600" font-size="6.8">${sec.id}</text>
       </g>
     `;
   }).join('');
@@ -301,71 +325,61 @@ const buildSVG = () => {
   });
 };
 
+// Selecciona sector
 const selectSector = g => {
   const svg = document.getElementById('stadium-map');
   svg.querySelectorAll('.st-sec').forEach(s => {
     s.classList.remove('sel');
-    const r = s.querySelector('rect');
-    const t = s.querySelector('text');
     const sid = s.dataset.sid;
     const sec = STADIUM_SECTIONS.find(x => x.id === sid);
-    r.setAttribute('fill', '#d5d5d5');
-    r.setAttribute('stroke', '#b3b3b3');
-    t.setAttribute('fill', '#4d4d4d');
     s.setAttribute('transform', getSectorTransform(sec, false));
   });
 
   g.classList.add('sel');
-  const rect = g.querySelector('rect');
-  const text = g.querySelector('text');
-  rect.setAttribute('fill', '#ed194d');
-  rect.setAttribute('stroke', '#c0132e');
-  text.setAttribute('fill', '#fefefe');
-
   const selSid = g.dataset.sid;
   const selSec = STADIUM_SECTIONS.find(x => x.id === selSid);
   g.setAttribute('transform', getSectorTransform(selSec, true));
 
+  // Muestra panel derecho
+  const panel = document.getElementById('details-panel');
+  if (panel) {
+    panel.classList.remove('hidden-panel');
+  }
+
   renderRows(selSid);
 };
 
+// Renderiza detalle del sector
 const renderRows = sid => {
   const container = document.getElementById('rows-container');
   if (!container) return;
 
-  const letter = sid[0];
-  const price = SECTOR_PRICES[letter] || 270000;
-  const rowQtys = getRows(sid);
+  const category = getSectorCategory(sid);
+  const price = SECTOR_PRICES[category] || 250000;
 
-  container.innerHTML = rowQtys.map((qty, i) => {
-    const fila = 8 - i;
-    const isSel = (i === 0);
-    let optionsHtml = '';
-    for (let v = 0; v <= 4; v++) {
-      const selectedAttr = (v === 4 && isSel) ? ' selected' : '';
-      optionsHtml += `<option value="${v}"${selectedAttr}>${v}</option>`;
-    }
+  let optionsHtml = '';
+  for (let v = 1; v <= 4; v++) {
+    optionsHtml += `<option value="${v}">${v}</option>`;
+  }
 
-    return `
-      <div class="ta-row-item${isSel ? ' sel-row' : ''}" data-fila="${fila}" data-qty="${qty}">
-        <div class="tr-sector">${sid}</div>
-        <div class="tr-fila">${fila}</div>
-        <div class="tr-qty"><select class="ta-qty-sel">${optionsHtml}</select></div>
-        <div class="tr-price">$${fmt(price)}</div>
-        <div class="tr-cart"><button class="ta-cart-btn"><i class="bi bi-cart-fill" style="color:#ed194d"></i></button></div>
+  const formattedCategory = category.charAt(0).toUpperCase() + category.slice(1);
+
+  container.innerHTML = `
+    <div class="ta-row-item sel-row" data-sector="${sid}">
+      <div class="tr-sector">${sid} (${formattedCategory})</div>
+      <div class="tr-qty">
+        <select class="ta-qty-sel">${optionsHtml}</select>
       </div>
-    `;
-  }).join('');
+      <div class="tr-price">$${fmt(price)}</div>
+      <div class="tr-cart">
+        <button class="ta-cart-btn" aria-label="Agregar al carrito">
+          <i class="bi bi-cart-fill"></i>
+        </button>
+      </div>
+    </div>
+  `;
 
-  container.querySelectorAll('.ta-row-item').forEach(row => {
-    row.addEventListener('click', () => {
-      container.querySelectorAll('.ta-row-item').forEach(r => r.classList.remove('sel-row'));
-      row.classList.add('sel-row');
-      const btn = document.getElementById('btn-continuar');
-      if (btn) btn.disabled = false;
-    });
-  });
-
+  // Activa botón de continuar
   const btn = document.getElementById('btn-continuar');
   if (btn) {
     btn.disabled = false;
@@ -383,7 +397,30 @@ const renderRows = sid => {
   }
 };
 
+// Control de zoom del mapa
+const initZoom = () => {
+  let currentScale = 1;
+  const map = document.getElementById('stadium-map');
+  const zoomIn = document.getElementById('zoom-in');
+  const zoomOut = document.getElementById('zoom-out');
+  if (!map || !zoomIn || !zoomOut) return;
+
+  zoomIn.onclick = () => {
+    currentScale = Math.min(currentScale + 0.15, 1.8);
+    map.style.transform = `scale(${currentScale})`;
+    map.style.transformOrigin = 'center center';
+  };
+  zoomOut.onclick = () => {
+    currentScale = Math.max(currentScale - 0.15, 0.7);
+    map.style.transform = `scale(${currentScale})`;
+    map.style.transformOrigin = 'center center';
+  };
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('matches-container')) initCalendar();
-  if (document.getElementById('match-bar')) initEstadio();
+  if (document.getElementById('match-bar')) {
+    initEstadio();
+    initZoom();
+  }
 });
