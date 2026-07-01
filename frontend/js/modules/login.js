@@ -153,3 +153,55 @@ if ($registerForm) {
         setTimeout(() => { window.location.href = 'index.html'; }, 1000);
     });
 }
+
+// TRANSICIÓN DE PASOS EN REGISTRO (FORMULARIO MULTI-PASO)
+const $btnContinuar = document.getElementById('btn-continuar');
+if ($btnContinuar) {
+    $btnContinuar.addEventListener('click', (e) => {
+        const stepIdentity = document.getElementById('step-identity-fields');
+        const stepAccount = document.getElementById('step-account-fields');
+        const sidebarStep2 = document.getElementById('sidebar-step-2');
+        const sidebarStep3 = document.getElementById('sidebar-step-3');
+        const formHeader = document.getElementById('form-header');
+        const formSubtitle = document.getElementById('form-subtitle');
+
+        // Obtenemos los campos del Paso 1
+        const doc = document.getElementById('documento');
+        const nac = document.getElementById('nacionalidad');
+        const tipo = document.getElementById('tipo-documento');
+        const term = document.getElementById('terminos');
+
+        // Ejecutamos validación nativa de HTML5 en los campos del Paso 1
+        if (!doc.checkValidity() || !nac.checkValidity() || !tipo.checkValidity() || !term.checkValidity()) {
+            $registerForm.classList.add('was-validated');
+            return;
+        }
+
+        // Si son válidos, evitamos envío nativo y pasamos al Paso 2
+        e.preventDefault();
+        $registerForm.classList.remove('was-validated');
+
+        // Transición de paneles
+        stepIdentity.classList.add('d-none');
+        stepAccount.classList.remove('d-none');
+
+        // Actualizar sidebar (Paso 2 completado, Paso 3 activo)
+        if (sidebarStep2 && sidebarStep3) {
+            sidebarStep2.parentElement.children[1].classList.remove('text-white', 'fw-bold');
+            sidebarStep2.parentElement.children[1].classList.add('text-white-50', 'opacity-50');
+            sidebarStep2.querySelector('span').classList.remove('bg-brand');
+            sidebarStep2.querySelector('span').classList.add('bg-white', 'bg-opacity-10');
+
+            sidebarStep3.classList.remove('text-white-50', 'opacity-50');
+            sidebarStep3.classList.add('text-white', 'fw-bold');
+            sidebarStep3.querySelector('span').classList.remove('bg-white', 'bg-opacity-10');
+            sidebarStep3.querySelector('span').classList.add('bg-brand');
+        }
+
+        // Actualizar encabezados
+        if (formHeader && formSubtitle) {
+            formHeader.textContent = 'CREÁ TU CUENTA TICKETAPP';
+            formSubtitle.textContent = 'Por favor completa los datos de tu cuenta para finalizar el registro:';
+        }
+    });
+}
