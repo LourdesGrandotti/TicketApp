@@ -255,10 +255,7 @@ if (btnCerrarSesion) {
     const confirmar = confirm("¿Seguro que desea cerrar sesión?");
     if (confirmar) {
       localStorage.removeItem('userToken');
-      localStorage.removeItem('currentUser');
-      localStorage.removeItem('currentUsername');
-      localStorage.removeItem('userEmail');
-      localStorage.removeItem('userRole');
+
       window.location.href = 'index.html';
     }
   });
