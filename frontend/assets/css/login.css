@@ -1,0 +1,150 @@
+/* ===========================================================================
+   TICKETAPP - ESTILOS DE AUTENTICACIÓN (LOGIN Y REGISTRO)
+   =========================================================================== */
+
+:root {
+  --primary: #ed194d;
+  --primary-hover: #d11241;
+  --dark: #121212;
+  --light: #ffffff;
+  --overlay-dark: rgba(0, 0, 0, 0.7);
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.auth-bg {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(10, 10, 10, 0.9)), url('../img/estadio.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+
+/* Marca y Tipografía */
+.text-brand {
+  color: var(--primary) !important;
+}
+
+.btn-brand {
+  background-color: var(--primary) !important;
+  color: white !important;
+  border: none !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-brand:hover {
+  background-color: var(--primary-hover) !important;
+  color: white !important;
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.btn-brand:active {
+  transform: translateY(1px);
+}
+
+/* Inputs de Autenticación Modernos (Con y Sin Iconos) */
+.auth-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-input-icon {
+  position: absolute;
+  left: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.auth-input {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  padding: 14px 16px 14px 48px !important;
+  color: white !important;
+  font-size: 10.5pt !important;
+  transition: all 0.2s ease !important;
+}
+
+.auth-input::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.auth-input:focus {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(237, 25, 77, 0.25) !important;
+}
+
+.auth-input-no-icon {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 8px !important;
+  padding: 14px 16px !important;
+  color: white !important;
+  font-size: 10.5pt !important;
+  transition: all 0.2s ease !important;
+}
+
+.auth-input-no-icon::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.auth-input-no-icon:focus {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(237, 25, 77, 0.25) !important;
+}
+
+/* Estilos de Select para Selects oscuros consistentemente */
+select.auth-input-no-icon {
+  color: white !important;
+}
+
+select.auth-input-no-icon option {
+  color: white !important;
+  background-color: #212529 !important;
+}
+
+/* Botón interactivo para ver/ocultar contraseña */
+.toggle-password-btn {
+  color: rgba(255, 255, 255, 0.5) !important;
+  transition: color 0.15s ease;
+}
+
+.toggle-password-btn:hover {
+  color: white !important;
+}
+
+.hover-opacity {
+  transition: opacity 0.15s ease;
+}
+
+.hover-opacity:hover {
+  opacity: 0.8 !important;
+}
+
+/* Validaciones personalizadas estilo Bootstrap */
+.was-validated .form-control:invalid,
+.was-validated .form-select:invalid {
+  border-color: #dc3545 !important;
+  background-image: none !important;
+}
+
+.was-validated .form-control:valid,
+.was-validated .form-select:valid {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  background-image: none !important;
+}
+
+.invalid-feedback {
+  font-size: 9pt !important;
+}
