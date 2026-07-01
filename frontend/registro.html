@@ -7,7 +7,7 @@
   <title>TicketsApp - Registro</title>
 
   <!-- Favicon Oficial -->
-  <link rel="icon" type="image/png" href="img/TicketApp.png">
+  <link rel="icon" type="image/png" href="assets/images/image.png">
 
   <!-- Iconos Externos (Boxicons + Bootstrap Icons) -->
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Hoja de Estilos Compartida -->
-  <link rel="stylesheet" href="assets/css/login.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body class="auth-bg d-flex flex-column min-vh-100 font-montserrat text-white">
@@ -26,11 +26,11 @@
   <header class="d-flex justify-content-between align-items-center px-4 py-3 bg-transparent w-100">
     <div>
       <a href="home.html">
-        <img src="img/LogoTicketApp.png" alt="Logo TicketApp" class="img-fluid" width="140" height="40">
+        <img src="assets/images/image.png" alt="Logo TicketApp" class="img-fluid" width="140" height="40">
       </a>
     </div>
     <div class="small text-white-50 opacity-75">
-      ¿Ya tenés cuenta? <a href="login.html" class="text-brand fw-bold text-decoration-none ms-1 hover-opacity">¡Ingresá
+      ¿Ya tenés cuenta? <a href="index.html" class="text-brand fw-bold text-decoration-none ms-1 hover-opacity">¡Ingresá
         ahora!</a>
     </div>
   </header>
@@ -47,22 +47,22 @@
             <!-- Paso 1 (Mudo/Pasado) -->
 
 
-            <!-- Paso 2 (Activo por defecto) -->
-            <div id="sidebar-step-2" class="d-flex align-items-center gap-3 text-white fw-bold">
+            <!-- Paso 2: Creá tu cuenta (Activo por defecto) -->
+            <div id="sidebar-step-account" class="d-flex align-items-center gap-3 text-white fw-bold">
               <span class="fs-4 d-flex align-items-center justify-content-center bg-brand text-white rounded-circle"
-                style="width: 40px; height: 40px;">
-                <i class="bx bx-id-card"></i>
-              </span>
-              <div class="small text-uppercase">Validá tu identidad</div>
-            </div>
-
-            <!-- Paso 3 (Mudo/Siguiente) -->
-            <div id="sidebar-step-3" class="d-flex align-items-center gap-3 text-white-50 opacity-50">
-              <span class="fs-4 d-flex align-items-center justify-content-center bg-white bg-opacity-10 rounded-circle"
                 style="width: 40px; height: 40px;">
                 <i class="bx bx-user"></i>
               </span>
               <div class="small text-uppercase">Creá tu cuenta</div>
+            </div>
+
+            <!-- Paso 3: Validá tu identidad (Mudo/Siguiente) -->
+            <div id="sidebar-step-identity" class="d-flex align-items-center gap-3 text-white-50 opacity-50">
+              <span class="fs-4 d-flex align-items-center justify-content-center bg-white bg-opacity-10 rounded-circle"
+                style="width: 40px; height: 40px;">
+                <i class="bx bx-id-card"></i>
+              </span>
+              <div class="small text-uppercase">Validá tu identidad</div>
             </div>
 
           </div>
@@ -73,78 +73,16 @@
 
           <!-- Encabezado del Formulario -->
           <h2 id="form-header" class="h3 fw-bold text-uppercase mb-3" style="letter-spacing: 0.5px;">
-            REGISTRATE EN TICKETAPP
+            CREÁ TU CUENTA TICKETAPP
           </h2>
           <p id="form-subtitle" class="text-white-70 opacity-75 small mb-4">
-            Para formar parte de Ticket APP necesitas validar tu identidad, por favor completá los siguientes datos:
+            Por favor completa los datos de tu cuenta para comenzar el registro:
           </p>
 
           <!-- ==============================================
-               PASO 1: Validación de Identidad (Visible)
+               PASO 1: Creación de Cuenta (Visible al inicio)
                ============================================== -->
-          <div id="step-identity-fields" class="w-100" style="max-width: 580px;">
-
-            <!-- Documento -->
-            <div class="mb-3">
-              <label for="documento" class="form-label small fw-medium text-white-70 mb-2">Documento</label>
-              <input type="text" class="form-control auth-input-no-icon" id="documento" placeholder="Documento"
-                required>
-              <div class="invalid-feedback text-danger small mt-1">El número de documento es requerido.</div>
-            </div>
-
-            <!-- Nacionalidad -->
-            <div class="mb-3">
-              <label for="nacionalidad" class="form-label small fw-medium text-white-70 mb-2">Nacionalidad</label>
-              <select class="form-select auth-input-no-icon" id="nacionalidad" required>
-                <option value="" disabled selected class="text-dark">Selecciona tu nacionalidad</option>
-                <option value="ar" class="text-dark">Argentina</option>
-                <option value="br" class="text-dark">Brasil</option>
-                <option value="uy" class="text-dark">Uruguay</option>
-                <option value="cl" class="text-dark">Chile</option>
-                <option value="co" class="text-dark">Colombia</option>
-                <option value="mx" class="text-dark">México</option>
-                <option value="es" class="text-dark">España</option>
-                <option value="us" class="text-dark">Estados Unidos</option>
-              </select>
-              <div class="invalid-feedback text-danger small mt-1">La nacionalidad es requerida.</div>
-            </div>
-
-            <!-- Tipo de Documento -->
-            <div class="mb-4">
-              <label for="tipo-documento" class="form-label small fw-medium text-white-70 mb-2">Tipo de
-                documento</label>
-              <select class="form-select auth-input-no-icon" id="tipo-documento" required>
-                <option value="" disabled selected class="text-dark">Selecciona tipo de documento</option>
-                <option value="DNI" class="text-dark">DNI (Documento Nacional de Identidad)</option>
-                <option value="Pasaporte" class="text-dark">Pasaporte</option>
-                <option value="LC" class="text-dark">Libreta Cívica</option>
-                <option value="LE" class="text-dark">Libreta de Enrolamiento</option>
-              </select>
-              <div class="invalid-feedback text-danger small mt-1">El tipo de documento es requerido.</div>
-            </div>
-
-            <!-- Checkbox de términos y condiciones -->
-            <div class="mb-4 small">
-              <div class="form-check">
-                <input class="form-check-input bg-transparent border-secondary" type="checkbox" id="terminos" required>
-                <label class="form-check-label text-white-70 opacity-75" for="terminos">
-                  He leído y acepto los <span class="text-white fw-bold">Términos y condiciones de usuario</span>
-                </label>
-                <div class="invalid-feedback text-danger small mt-1">Debes aceptar los términos para continuar.</div>
-              </div>
-            </div>
-
-            <!-- Botón de Siguiente Paso -->
-            <button type="button" id="btn-continuar"
-              class="btn btn-brand btn-lg w-100 py-3 fw-bold text-uppercase rounded-3 shadow-sm fs-6">
-              Continuar
-            </button>
-          </div>
-
-          <!-- ==============================================
-               PASO 2: Creación de Cuenta (Oculto al inicio)
-               ============================================== -->
-          <div id="step-account-fields" class="w-100 d-none" style="max-width: 580px;">
+          <div id="step-account-fields" class="w-100" style="max-width: 580px;">
 
             <!-- Correo electrónico -->
             <div class="mb-3">
@@ -200,15 +138,77 @@
               </div>
             </div>
 
-            <!-- Mensaje de Alerta inyectado por JS -->
-            <p id="authMessage" class="fw-bold small text-center mb-3"></p>
-
-            <!-- Botón de Envío del Formulario -->
-            <button type="submit"
+            <!-- Botón de Siguiente Paso -->
+            <button type="button" id="btn-continuar-cuenta"
               class="btn btn-brand btn-lg w-100 py-3 fw-bold text-uppercase rounded-3 shadow-sm fs-6">
-              Registrarse →
+              Continuar
             </button>
           </div>
+
+          <!-- ==============================================
+               PASO 2: Validación de Identidad (Oculto al inicio)
+               ============================================== -->
+          <div id="step-identity-fields" class="w-100 d-none" style="max-width: 580px;">
+
+            <!-- Documento -->
+            <div class="mb-3">
+              <label for="documento" class="form-label small fw-medium text-white-70 mb-2">Documento</label>
+              <input type="text" class="form-control auth-input-no-icon" id="documento" placeholder="Documento"
+                required>
+              <div class="invalid-feedback text-danger small mt-1">El número de documento es requerido.</div>
+            </div>
+
+            <!-- Nacionalidad -->
+            <div class="mb-3">
+              <label for="nacionalidad" class="form-label small fw-medium text-white-70 mb-2">Nacionalidad</label>
+              <select class="form-select auth-input-no-icon" id="nacionalidad" required>
+                <option value="" disabled selected class="text-dark">Selecciona tu nacionalidad</option>
+                <option value="ar" class="text-dark">Argentina</option>
+                <option value="br" class="text-dark">Brasil</option>
+                <option value="uy" class="text-dark">Uruguay</option>
+                <option value="cl" class="text-dark">Chile</option>
+                <option value="co" class="text-dark">Colombia</option>
+                <option value="mx" class="text-dark">México</option>
+                <option value="es" class="text-dark">España</option>
+                <option value="us" class="text-dark">Estados Unidos</option>
+              </select>
+              <div class="invalid-feedback text-danger small mt-1">La nacionalidad es requerida.</div>
+            </div>
+
+            <!-- Tipo de Documento -->
+            <div class="mb-4">
+              <label for="tipo-documento" class="form-label small fw-medium text-white-70 mb-2">Tipo de
+                documento</label>
+              <select class="form-select auth-input-no-icon" id="tipo-documento" required>
+                <option value="" disabled selected class="text-dark">Selecciona tipo de documento</option>
+                <option value="DNI" class="text-dark">DNI (Documento Nacional de Identidad)</option>
+                <option value="Pasaporte" class="text-dark">Pasaporte</option>
+                <option value="LC" class="text-dark">Libreta Cívica</option>
+                <option value="LE" class="text-dark">Libreta de Enrolamiento</option>
+              </select>
+              <div class="invalid-feedback text-danger small mt-1">El tipo de documento es requerido.</div>
+            </div>
+
+            <!-- Checkbox de términos y condiciones -->
+            <div class="mb-4 small">
+              <div class="form-check">
+                <input class="form-check-input bg-transparent border-secondary" type="checkbox" id="terminos" required>
+                <label class="form-check-label text-white-70 opacity-75" for="terminos">
+                  He leído y acepto los <span class="text-white fw-bold">Términos y condiciones de usuario</span>
+                </label>
+                <div class="invalid-feedback text-danger small mt-1">Debes aceptar los términos para continuar.</div>
+              </div>
+            </div>
+
+            <!-- Botón de Envío / Registro (Último paso) -->
+            <button type="button" id="btn-continuar"
+              class="btn btn-brand btn-lg w-100 py-3 fw-bold text-uppercase rounded-3 shadow-sm fs-6">
+              Continuar
+            </button>
+          </div>
+
+          <!-- Mensaje de Alerta inyectado por JS -->
+          <p id="authMessage" class="fw-bold small text-center mb-3 mt-3"></p>
 
         </div>
 
